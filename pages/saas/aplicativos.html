@@ -1,0 +1,516 @@
+﻿<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+    <title>SaaS Manager - Aplicativos</title>
+    <link rel="stylesheet" href="../../assets/vendors/feather/feather.css" />
+    <link rel="stylesheet" href="../../assets/vendors/mdi/css/materialdesignicons.min.css" />
+    <link rel="stylesheet" href="../../assets/vendors/ti-icons/css/themify-icons.css" />
+    <link rel="stylesheet" href="../../assets/vendors/font-awesome/css/font-awesome.min.css" />
+    <link rel="stylesheet" href="../../assets/vendors/typicons/typicons.css" />
+    <link rel="stylesheet" href="../../assets/vendors/simple-line-icons/css/simple-line-icons.css" />
+    <link rel="stylesheet" href="../../assets/vendors/css/vendor.bundle.base.css" />
+    <link rel="stylesheet" href="../../assets/vendors/bootstrap-datepicker/bootstrap-datepicker.min.css" />
+    <link rel="stylesheet" href="../../assets/css/style.css" />
+    <link rel="stylesheet" href="../../assets/css/saas-custom.css" />
+    <link rel="shortcut icon" href="../../assets/images/favicon.png" />
+  </head>
+  <body>
+    <div class="container-scroller">
+      <nav class="navbar default-layout col-lg-12 col-12 p-0 fixed-top d-flex align-items-top flex-row">
+        <div class="text-center navbar-brand-wrapper d-flex align-items-center justify-content-start">
+          <div class="me-3">
+            <button class="navbar-toggler navbar-toggler align-self-center" type="button" data-bs-toggle="minimize">
+              <span class="icon-menu"></span>
+            </button>
+          </div>
+          <div>
+            <a class="navbar-brand brand-logo" href="dashboard.html">
+              <img src="../../assets/images/logo.svg" alt="logo" />
+            </a>
+            <a class="navbar-brand brand-logo-mini" href="dashboard.html">
+              <img src="../../assets/images/logo-mini.svg" alt="logo" />
+            </a>
+          </div>
+        </div>
+        <div class="navbar-menu-wrapper d-flex align-items-top">
+          <ul class="navbar-nav">
+            <li class="nav-item fw-semibold d-none d-lg-block ms-0">
+              <h1 class="welcome-text">Aplicativos</h1>
+              <h3 class="welcome-sub-text">Gestão das empresas e produtos ativos</h3>
+            </li>
+          </ul>
+        </div>
+      </nav>
+      <nav class="sidebar sidebar-offcanvas" id="sidebar">
+        <ul class="nav">
+          <li class="nav-item">
+            <a class="nav-link" href="dashboard.html">
+              <i class="mdi mdi-view-dashboard menu-icon"></i>
+              <span class="menu-title">Dashboard</span>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link active" href="aplicativos.html">
+              <i class="mdi mdi-application menu-icon"></i>
+              <span class="menu-title">Aplicativos</span>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="planos.html">
+              <i class="mdi mdi-currency-usd menu-icon"></i>
+              <span class="menu-title">Planos</span>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="licencas.html">
+              <i class="mdi mdi-key menu-icon"></i>
+              <span class="menu-title">Licenças</span>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="contas_receber.html">
+              <i class="mdi mdi-receipt menu-icon"></i>
+              <span class="menu-title">Contas a Receber</span>
+            </a>
+          </li>
+        </ul>
+      </nav>
+      <div class="main-panel">
+        <div class="content-wrapper">
+          <div class="row mb-4">
+            <div class="col-12">
+              <div class="d-flex flex-wrap justify-content-between align-items-center">
+                <div>
+                  <h2 class="saas-page-title">Aplicativos e empresas</h2>
+                  <p class="saas-subtitle mb-0">Administre o portfólio de aplicativos, planos e contratos ativos.</p>
+                </div>
+                <div class="d-flex flex-wrap gap-2 mt-3 mt-md-0">
+                  <button class="btn btn-outline-secondary">Importar base</button>
+                  <button class="btn btn-primary" id="btnNewApp">Novo aplicativo</button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="col-sm-6 col-md-3 grid-margin stretch-card">
+              <div class="card saas-kpi">
+                <div class="card-body">
+                  <h5 class="card-title">Total de apps</h5>
+                  <p class="card-text" id="appTotal">0</p>
+                  <small class="text-muted">Base cadastrada</small>
+                </div>
+              </div>
+            </div>
+            <div class="col-sm-6 col-md-3 grid-margin stretch-card">
+              <div class="card saas-kpi">
+                <div class="card-body">
+                  <h5 class="card-title">Ativos</h5>
+                  <p class="card-text" id="appActive">0</p>
+                  <small class="text-muted">Em operação</small>
+                </div>
+              </div>
+            </div>
+            <div class="col-sm-6 col-md-3 grid-margin stretch-card">
+              <div class="card saas-kpi">
+                <div class="card-body">
+                  <h5 class="card-title">Licenças</h5>
+                  <p class="card-text" id="appLicenses">0</p>
+                  <small class="text-muted">Distribuídas</small>
+                </div>
+              </div>
+            </div>
+            <div class="col-sm-6 col-md-3 grid-margin stretch-card">
+              <div class="card saas-kpi">
+                <div class="card-body">
+                  <h5 class="card-title">MRR</h5>
+                  <p class="card-text" id="appMrr">R$ 0,00</p>
+                  <small class="text-muted">Receita mensal</small>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="row mb-3">
+            <div class="col-md-4 mb-2 mb-md-0">
+              <input type="text" class="form-control" id="appSearch" placeholder="Buscar por aplicativo ou empresa" />
+            </div>
+            <div class="col-md-3 mb-2 mb-md-0">
+              <select class="form-select saas-filter" id="appStatusFilter">
+                <option value="all">Todos os status</option>
+                <option value="Ativo">Ativo</option>
+                <option value="Implantação">Implantação</option>
+                <option value="Pausado">Pausado</option>
+              </select>
+            </div>
+            <div class="col-md-3 mb-2 mb-md-0">
+              <select class="form-select saas-filter" id="appPlanFilter">
+                <option value="all">Todos os planos</option>
+                <option value="Starter">Starter</option>
+                <option value="Growth">Growth</option>
+                <option value="Pro">Pro</option>
+                <option value="Enterprise">Enterprise</option>
+              </select>
+            </div>
+            <div class="col-md-2 text-md-end">
+              <button class="btn btn-outline-primary w-100" id="resetAppFilters">Limpar filtros</button>
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="col-12 grid-margin stretch-card">
+              <div class="card">
+                <div class="card-body">
+                  <h4 class="card-title">Lista de aplicativos</h4>
+                  <div class="table-responsive">
+                    <table class="table table-striped">
+                      <thead>
+                        <tr>
+                          <th>Aplicativo</th>
+                          <th>Empresa</th>
+                          <th>Plano</th>
+                          <th>Licenças</th>
+                          <th>Status</th>
+                          <th>MRR</th>
+                          <th>Início</th>
+                          <th>Ações</th>
+                        </tr>
+                      </thead>
+                      <tbody id="appsTableBody"></tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="modal fade" id="appModal" tabindex="-1" aria-labelledby="appModalLabel" aria-hidden="true">
+          <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title" id="appModalLabel">Novo aplicativo</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+              </div>
+              <div class="modal-body">
+                <form id="appForm" class="row g-3">
+                  <input type="hidden" id="appId" />
+                  <div class="col-md-6">
+                    <label for="appName" class="form-label">Nome do aplicativo</label>
+                    <input type="text" class="form-control" id="appName" required />
+                  </div>
+                  <div class="col-md-6">
+                    <label for="appCompany" class="form-label">Empresa</label>
+                    <input type="text" class="form-control" id="appCompany" required />
+                  </div>
+                  <div class="col-md-4">
+                    <label for="appSegment" class="form-label">Segmento</label>
+                    <input type="text" class="form-control" id="appSegment" />
+                  </div>
+                  <div class="col-md-4">
+                    <label for="appManager" class="form-label">Responsável</label>
+                    <input type="text" class="form-control" id="appManager" />
+                  </div>
+                  <div class="col-md-4">
+                    <label for="appPlan" class="form-label">Plano</label>
+                    <select class="form-select" id="appPlan">
+                      <option value="Starter">Starter</option>
+                      <option value="Growth">Growth</option>
+                      <option value="Pro">Pro</option>
+                      <option value="Enterprise">Enterprise</option>
+                    </select>
+                  </div>
+                  <div class="col-md-4">
+                    <label for="appLicenses" class="form-label">Licenças contratadas</label>
+                    <input type="number" class="form-control" id="appLicenses" min="1" />
+                  </div>
+                  <div class="col-md-4">
+                    <label for="appMonthly" class="form-label">Valor mensal (R$)</label>
+                    <input type="number" class="form-control" id="appMonthly" step="0.01" min="0" />
+                  </div>
+                  <div class="col-md-4">
+                    <label for="appBilling" class="form-label">Ciclo de cobrança</label>
+                    <select class="form-select" id="appBilling">
+                      <option value="Mensal">Mensal</option>
+                      <option value="Trimestral">Trimestral</option>
+                      <option value="Anual">Anual</option>
+                    </select>
+                  </div>
+                  <div class="col-md-4">
+                    <label for="appStart" class="form-label">Data de início</label>
+                    <input type="date" class="form-control" id="appStart" />
+                  </div>
+                  <div class="col-md-4">
+                    <label for="appStatus" class="form-label">Status</label>
+                    <select class="form-select" id="appStatus">
+                      <option value="Ativo">Ativo</option>
+                      <option value="Implantação">Implantação</option>
+                      <option value="Pausado">Pausado</option>
+                    </select>
+                  </div>
+                  <div class="col-md-12">
+                    <label for="appNotes" class="form-label">Observações</label>
+                    <textarea class="form-control" id="appNotes" rows="3"></textarea>
+                  </div>
+                </form>
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-primary" id="saveAppBtn">Salvar</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+          <div class="modal-dialog modal-sm">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title" id="deleteModalLabel">Confirmar exclusão</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+              </div>
+              <div class="modal-body">Tem certeza que deseja excluir este aplicativo?</div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-danger" id="confirmDeleteBtn">Excluir</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <script src="../../assets/vendors/js/vendor.bundle.base.js"></script>
+        <script>
+          const currency = new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' });
+          let apps = [
+            {
+              id: 1,
+              name: 'ClickResto',
+              company: 'Resto Group',
+              plan: 'Pro',
+              licenses: 24,
+              status: 'Ativo',
+              monthly: 1290,
+              start: '2025-11-15',
+              billing: 'Mensal',
+              segment: 'Food Service',
+              manager: 'Paula Lima',
+              notes: 'Conta com integração fiscal ativa.'
+            },
+            {
+              id: 2,
+              name: 'FinanDesk',
+              company: 'Nova Capital',
+              plan: 'Enterprise',
+              licenses: 48,
+              status: 'Ativo',
+              monthly: 4200,
+              start: '2024-08-02',
+              billing: 'Mensal',
+              segment: 'Finanças',
+              manager: 'Rafael Costa',
+              notes: 'Expansão para 3 filiais em abril.'
+            },
+            {
+              id: 3,
+              name: 'Delivery Plus',
+              company: 'Mundo Foods',
+              plan: 'Growth',
+              licenses: 31,
+              status: 'Implantação',
+              monthly: 1980,
+              start: '2026-02-10',
+              billing: 'Mensal',
+              segment: 'Logística',
+              manager: 'Camila Reis',
+              notes: 'Treinamento agendado para próxima semana.'
+            },
+            {
+              id: 4,
+              name: 'ClinicFlow',
+              company: 'VidaMais',
+              plan: 'Pro',
+              licenses: 19,
+              status: 'Pausado',
+              monthly: 1490,
+              start: '2023-05-20',
+              billing: 'Anual',
+              segment: 'Saúde',
+              manager: 'Lucas Prado',
+              notes: 'Revisar contrato anual.'
+            }
+          ];
+
+          const appsTableBody = document.getElementById('appsTableBody');
+          const appModal = new bootstrap.Modal(document.getElementById('appModal'));
+          const deleteModal = new bootstrap.Modal(document.getElementById('deleteModal'));
+          let deleteId = null;
+
+          function formatDate(iso) {
+            if (!iso) return '-';
+            const parts = iso.split('-');
+            return `${parts[2]}/${parts[1]}/${parts[0]}`;
+          }
+
+          function statusBadge(status) {
+            const map = {
+              'Ativo': 'badge-ativo',
+              'Implantação': 'badge-pendente',
+              'Pausado': 'badge-expirada'
+            };
+            const cls = map[status] || 'badge-expirada';
+            return `<span class="badge badge-status ${cls}">${status}</span>`;
+          }
+
+          function renderStats() {
+            const active = apps.filter(app => app.status === 'Ativo').length;
+            const totalLicenses = apps.reduce((sum, app) => sum + app.licenses, 0);
+            const mrr = apps.reduce((sum, app) => sum + app.monthly, 0);
+
+            document.getElementById('appTotal').textContent = apps.length;
+            document.getElementById('appActive').textContent = active;
+            document.getElementById('appLicenses').textContent = totalLicenses;
+            document.getElementById('appMrr').textContent = currency.format(mrr);
+          }
+
+          function applyFilters(data) {
+            const term = document.getElementById('appSearch').value.toLowerCase().trim();
+            const status = document.getElementById('appStatusFilter').value;
+            const plan = document.getElementById('appPlanFilter').value;
+
+            return data.filter(app => {
+              const matchesTerm = !term || app.name.toLowerCase().includes(term) || app.company.toLowerCase().includes(term);
+              const matchesStatus = status === 'all' || app.status === status;
+              const matchesPlan = plan === 'all' || app.plan === plan;
+              return matchesTerm && matchesStatus && matchesPlan;
+            });
+          }
+
+          function renderApps() {
+            const filtered = applyFilters(apps);
+            appsTableBody.innerHTML = '';
+            filtered.forEach(app => {
+              const tr = document.createElement('tr');
+              tr.innerHTML = `
+                <td>
+                  <div class="fw-semibold">${app.name}</div>
+                  <small class="text-muted">${app.segment}</small>
+                </td>
+                <td>${app.company}</td>
+                <td>${app.plan}</td>
+                <td>${app.licenses}</td>
+                <td>${statusBadge(app.status)}</td>
+                <td>${currency.format(app.monthly)}</td>
+                <td>${formatDate(app.start)}</td>
+                <td class="saas-table-actions">
+                  <button class="btn btn-sm btn-secondary btn-edit" data-id="${app.id}">Editar</button>
+                  <button class="btn btn-sm btn-danger btn-delete" data-id="${app.id}">Excluir</button>
+                </td>
+              `;
+              appsTableBody.appendChild(tr);
+            });
+
+            document.querySelectorAll('.btn-edit').forEach(btn => {
+              btn.addEventListener('click', e => {
+                const id = parseInt(e.target.dataset.id, 10);
+                const app = apps.find(item => item.id === id);
+                if (!app) return;
+                document.getElementById('appId').value = app.id;
+                document.getElementById('appName').value = app.name;
+                document.getElementById('appCompany').value = app.company;
+                document.getElementById('appSegment').value = app.segment;
+                document.getElementById('appManager').value = app.manager;
+                document.getElementById('appPlan').value = app.plan;
+                document.getElementById('appLicenses').value = app.licenses;
+                document.getElementById('appMonthly').value = app.monthly;
+                document.getElementById('appBilling').value = app.billing;
+                document.getElementById('appStart').value = app.start;
+                document.getElementById('appStatus').value = app.status;
+                document.getElementById('appNotes').value = app.notes;
+                document.getElementById('appModalLabel').textContent = 'Editar aplicativo';
+                appModal.show();
+              });
+            });
+
+            document.querySelectorAll('.btn-delete').forEach(btn => {
+              btn.addEventListener('click', e => {
+                deleteId = parseInt(e.target.dataset.id, 10);
+                deleteModal.show();
+              });
+            });
+          }
+
+          document.getElementById('btnNewApp').addEventListener('click', () => {
+            document.getElementById('appForm').reset();
+            document.getElementById('appId').value = '';
+            document.getElementById('appModalLabel').textContent = 'Novo aplicativo';
+            appModal.show();
+          });
+
+          document.getElementById('saveAppBtn').addEventListener('click', () => {
+            const form = document.getElementById('appForm');
+            if (!form.reportValidity()) {
+              return;
+            }
+            const id = document.getElementById('appId').value;
+            const payload = {
+              id: id ? parseInt(id, 10) : Date.now(),
+              name: document.getElementById('appName').value,
+              company: document.getElementById('appCompany').value,
+              segment: document.getElementById('appSegment').value,
+              manager: document.getElementById('appManager').value,
+              plan: document.getElementById('appPlan').value,
+              licenses: parseInt(document.getElementById('appLicenses').value || '0', 10),
+              monthly: parseFloat(document.getElementById('appMonthly').value || '0'),
+              billing: document.getElementById('appBilling').value,
+              start: document.getElementById('appStart').value,
+              status: document.getElementById('appStatus').value,
+              notes: document.getElementById('appNotes').value
+            };
+
+            if (id) {
+              const index = apps.findIndex(item => item.id === payload.id);
+              apps[index] = payload;
+            } else {
+              apps.push(payload);
+            }
+
+            appModal.hide();
+            renderStats();
+            renderApps();
+          });
+
+          document.getElementById('confirmDeleteBtn').addEventListener('click', () => {
+            apps = apps.filter(item => item.id !== deleteId);
+            deleteModal.hide();
+            renderStats();
+            renderApps();
+          });
+
+          document.getElementById('appSearch').addEventListener('input', renderApps);
+          document.getElementById('appStatusFilter').addEventListener('change', renderApps);
+          document.getElementById('appPlanFilter').addEventListener('change', renderApps);
+
+          document.getElementById('resetAppFilters').addEventListener('click', () => {
+            document.getElementById('appSearch').value = '';
+            document.getElementById('appStatusFilter').value = 'all';
+            document.getElementById('appPlanFilter').value = 'all';
+            renderApps();
+          });
+
+          renderStats();
+          renderApps();
+        </script>
+        <script src="../../assets/vendors/bootstrap-datepicker/bootstrap-datepicker.min.js"></script>
+        <script src="../../assets/js/off-canvas.js"></script>
+        <script src="../../assets/js/template.js"></script>
+        <script src="../../assets/js/settings.js"></script>
+        <script src="../../assets/js/hoverable-collapse.js"></script>
+        <script src="../../assets/js/todolist.js"></script>
+      </div>
+    </div>
+  </body>
+</html>
+
+

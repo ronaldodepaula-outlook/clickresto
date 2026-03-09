@@ -1,0 +1,492 @@
+﻿<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+    <title>SaaS Manager - Planos</title>
+    <link rel="stylesheet" href="../../assets/vendors/feather/feather.css" />
+    <link rel="stylesheet" href="../../assets/vendors/mdi/css/materialdesignicons.min.css" />
+    <link rel="stylesheet" href="../../assets/vendors/ti-icons/css/themify-icons.css" />
+    <link rel="stylesheet" href="../../assets/vendors/font-awesome/css/font-awesome.min.css" />
+    <link rel="stylesheet" href="../../assets/vendors/typicons/typicons.css" />
+    <link rel="stylesheet" href="../../assets/vendors/simple-line-icons/css/simple-line-icons.css" />
+    <link rel="stylesheet" href="../../assets/vendors/css/vendor.bundle.base.css" />
+    <link rel="stylesheet" href="../../assets/vendors/bootstrap-datepicker/bootstrap-datepicker.min.css" />
+    <link rel="stylesheet" href="../../assets/css/style.css" />
+    <link rel="stylesheet" href="../../assets/css/saas-custom.css" />
+    <link rel="shortcut icon" href="../../assets/images/favicon.png" />
+  </head>
+  <body>
+    <div class="container-scroller">
+      <nav class="navbar default-layout col-lg-12 col-12 p-0 fixed-top d-flex align-items-top flex-row">
+        <div class="text-center navbar-brand-wrapper d-flex align-items-center justify-content-start">
+          <div class="me-3">
+            <button class="navbar-toggler navbar-toggler align-self-center" type="button" data-bs-toggle="minimize">
+              <span class="icon-menu"></span>
+            </button>
+          </div>
+          <div>
+            <a class="navbar-brand brand-logo" href="dashboard.html">
+              <img src="../../assets/images/logo.svg" alt="logo" />
+            </a>
+            <a class="navbar-brand brand-logo-mini" href="dashboard.html">
+              <img src="../../assets/images/logo-mini.svg" alt="logo" />
+            </a>
+          </div>
+        </div>
+        <div class="navbar-menu-wrapper d-flex align-items-top">
+          <ul class="navbar-nav">
+            <li class="nav-item fw-semibold d-none d-lg-block ms-0">
+              <h1 class="welcome-text">Planos</h1>
+              <h3 class="welcome-sub-text">Estruture preços, limites e benefícios</h3>
+            </li>
+          </ul>
+        </div>
+      </nav>
+      <nav class="sidebar sidebar-offcanvas" id="sidebar">
+        <ul class="nav">
+          <li class="nav-item">
+            <a class="nav-link" href="dashboard.html">
+              <i class="mdi mdi-view-dashboard menu-icon"></i>
+              <span class="menu-title">Dashboard</span>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="aplicativos.html">
+              <i class="mdi mdi-application menu-icon"></i>
+              <span class="menu-title">Aplicativos</span>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link active" href="planos.html">
+              <i class="mdi mdi-currency-usd menu-icon"></i>
+              <span class="menu-title">Planos</span>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="licencas.html">
+              <i class="mdi mdi-key menu-icon"></i>
+              <span class="menu-title">Licenças</span>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="contas_receber.html">
+              <i class="mdi mdi-receipt menu-icon"></i>
+              <span class="menu-title">Contas a Receber</span>
+            </a>
+          </li>
+        </ul>
+      </nav>
+      <div class="main-panel">
+        <div class="content-wrapper">
+          <div class="row mb-4">
+            <div class="col-12">
+              <div class="d-flex flex-wrap justify-content-between align-items-center">
+                <div>
+                  <h2 class="saas-page-title">Catálogo de planos</h2>
+                  <p class="saas-subtitle mb-0">Ajuste recursos, limites e status comerciais.</p>
+                </div>
+                <div class="d-flex flex-wrap gap-2 mt-3 mt-md-0">
+                  <button class="btn btn-outline-secondary">Simular preço</button>
+                  <button class="btn btn-primary" id="btnNewPlan">Novo plano</button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="col-sm-6 col-md-3 grid-margin stretch-card">
+              <div class="card saas-kpi">
+                <div class="card-body">
+                  <h5 class="card-title">Planos ativos</h5>
+                  <p class="card-text" id="planActive">0</p>
+                  <small class="text-muted">Disponíveis</small>
+                </div>
+              </div>
+            </div>
+            <div class="col-sm-6 col-md-3 grid-margin stretch-card">
+              <div class="card saas-kpi">
+                <div class="card-body">
+                  <h5 class="card-title">Ticket médio</h5>
+                  <p class="card-text" id="planTicket">R$ 0,00</p>
+                  <small class="text-muted">Mensalidade média</small>
+                </div>
+              </div>
+            </div>
+            <div class="col-sm-6 col-md-3 grid-margin stretch-card">
+              <div class="card saas-kpi">
+                <div class="card-body">
+                  <h5 class="card-title">Planos em teste</h5>
+                  <p class="card-text" id="planTrial">0</p>
+                  <small class="text-muted">Com trial ativo</small>
+                </div>
+              </div>
+            </div>
+            <div class="col-sm-6 col-md-3 grid-margin stretch-card">
+              <div class="card saas-kpi">
+                <div class="card-body">
+                  <h5 class="card-title">Planos arquivados</h5>
+                  <p class="card-text" id="planArchived">0</p>
+                  <small class="text-muted">Sem venda</small>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="row mb-3">
+            <div class="col-md-4 mb-2 mb-md-0">
+              <input type="text" class="form-control" id="planSearch" placeholder="Buscar por nome do plano" />
+            </div>
+            <div class="col-md-3 mb-2 mb-md-0">
+              <select class="form-select saas-filter" id="planStatusFilter">
+                <option value="all">Todos os status</option>
+                <option value="Ativo">Ativo</option>
+                <option value="Descontinuado">Descontinuado</option>
+              </select>
+            </div>
+            <div class="col-md-3 mb-2 mb-md-0">
+              <select class="form-select saas-filter" id="planSupportFilter">
+                <option value="all">Todos os suportes</option>
+                <option value="Essencial">Essencial</option>
+                <option value="Premium">Premium</option>
+                <option value="Dedicado">Dedicado</option>
+              </select>
+            </div>
+            <div class="col-md-2 text-md-end">
+              <button class="btn btn-outline-primary w-100" id="resetPlanFilters">Limpar filtros</button>
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="col-12 grid-margin stretch-card">
+              <div class="card">
+                <div class="card-body">
+                  <h4 class="card-title">Lista de planos</h4>
+                  <div class="table-responsive">
+                    <table class="table table-striped">
+                      <thead>
+                        <tr>
+                          <th>Plano</th>
+                          <th>Preço mensal</th>
+                          <th>Limites</th>
+                          <th>Suporte</th>
+                          <th>Trial</th>
+                          <th>Status</th>
+                          <th>Ações</th>
+                        </tr>
+                      </thead>
+                      <tbody id="plansTableBody"></tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="modal fade" id="planModal" tabindex="-1" aria-labelledby="planModalLabel" aria-hidden="true">
+          <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title" id="planModalLabel">Novo plano</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+              </div>
+              <div class="modal-body">
+                <form id="planForm" class="row g-3">
+                  <input type="hidden" id="planId" />
+                  <div class="col-md-6">
+                    <label for="planName" class="form-label">Nome</label>
+                    <input type="text" class="form-control" id="planName" required />
+                  </div>
+                  <div class="col-md-3">
+                    <label for="planPrice" class="form-label">Preço mensal (R$)</label>
+                    <input type="number" class="form-control" id="planPrice" step="0.01" min="0" required />
+                  </div>
+                  <div class="col-md-3">
+                    <label for="planTrialDays" class="form-label">Trial (dias)</label>
+                    <input type="number" class="form-control" id="planTrialDays" min="0" />
+                  </div>
+                  <div class="col-md-4">
+                    <label for="planUsers" class="form-label">Usuários inclusos</label>
+                    <input type="number" class="form-control" id="planUsers" min="1" />
+                  </div>
+                  <div class="col-md-4">
+                    <label for="planApps" class="form-label">Apps inclusos</label>
+                    <input type="number" class="form-control" id="planApps" min="1" />
+                  </div>
+                  <div class="col-md-4">
+                    <label for="planStorage" class="form-label">Armazenamento (GB)</label>
+                    <input type="number" class="form-control" id="planStorage" min="1" />
+                  </div>
+                  <div class="col-md-4">
+                    <label for="planSupport" class="form-label">Nível de suporte</label>
+                    <select class="form-select" id="planSupport">
+                      <option value="Essencial">Essencial</option>
+                      <option value="Premium">Premium</option>
+                      <option value="Dedicado">Dedicado</option>
+                    </select>
+                  </div>
+                  <div class="col-md-4">
+                    <label for="planStatus" class="form-label">Status</label>
+                    <select class="form-select" id="planStatus">
+                      <option value="Ativo">Ativo</option>
+                      <option value="Descontinuado">Descontinuado</option>
+                    </select>
+                  </div>
+                  <div class="col-md-12">
+                    <label for="planDesc" class="form-label">Descrição e diferenciais</label>
+                    <textarea class="form-control" id="planDesc" rows="3"></textarea>
+                  </div>
+                </form>
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-primary" id="savePlanBtn">Salvar</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="modal fade" id="deletePlanModal" tabindex="-1" aria-labelledby="deletePlanModalLabel" aria-hidden="true">
+          <div class="modal-dialog modal-sm">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title" id="deletePlanModalLabel">Confirmar exclusão</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+              </div>
+              <div class="modal-body">Tem certeza que deseja excluir este plano?</div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-danger" id="confirmDeletePlanBtn">Excluir</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <script src="../../assets/vendors/js/vendor.bundle.base.js"></script>
+        <script>
+          const currency = new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' });
+          let plans = [
+            {
+              id: 1,
+              name: 'Starter',
+              price: 290,
+              users: 10,
+              apps: 1,
+              storage: 20,
+              support: 'Essencial',
+              trial: 7,
+              status: 'Ativo',
+              desc: 'Para empresas iniciando no SaaS.'
+            },
+            {
+              id: 2,
+              name: 'Growth',
+              price: 890,
+              users: 40,
+              apps: 3,
+              storage: 80,
+              support: 'Premium',
+              trial: 14,
+              status: 'Ativo',
+              desc: 'Escala rápida com automações avançadas.'
+            },
+            {
+              id: 3,
+              name: 'Pro',
+              price: 1490,
+              users: 80,
+              apps: 6,
+              storage: 200,
+              support: 'Premium',
+              trial: 14,
+              status: 'Ativo',
+              desc: 'Alto volume com integrações completas.'
+            },
+            {
+              id: 4,
+              name: 'Enterprise',
+              price: 3200,
+              users: 200,
+              apps: 12,
+              storage: 500,
+              support: 'Dedicado',
+              trial: 30,
+              status: 'Ativo',
+              desc: 'Suporte dedicado e SLA customizado.'
+            },
+            {
+              id: 5,
+              name: 'Legacy',
+              price: 560,
+              users: 25,
+              apps: 2,
+              storage: 50,
+              support: 'Essencial',
+              trial: 0,
+              status: 'Descontinuado',
+              desc: 'Plano antigo sem novas vendas.'
+            }
+          ];
+
+          const plansTableBody = document.getElementById('plansTableBody');
+          const planModal = new bootstrap.Modal(document.getElementById('planModal'));
+          const deletePlanModal = new bootstrap.Modal(document.getElementById('deletePlanModal'));
+          let deletePlanId = null;
+
+          function statusBadge(status) {
+            const map = {
+              'Ativo': 'badge-ativo',
+              'Descontinuado': 'badge-expirada'
+            };
+            const cls = map[status] || 'badge-expirada';
+            return `<span class="badge badge-status ${cls}">${status}</span>`;
+          }
+
+          function renderStats() {
+            const active = plans.filter(plan => plan.status === 'Ativo').length;
+            const trial = plans.filter(plan => plan.trial > 0).length;
+            const archived = plans.filter(plan => plan.status === 'Descontinuado').length;
+            const average = plans.reduce((sum, plan) => sum + plan.price, 0) / plans.length;
+
+            document.getElementById('planActive').textContent = active;
+            document.getElementById('planTrial').textContent = trial;
+            document.getElementById('planArchived').textContent = archived;
+            document.getElementById('planTicket').textContent = currency.format(average || 0);
+          }
+
+          function applyFilters(data) {
+            const term = document.getElementById('planSearch').value.toLowerCase().trim();
+            const status = document.getElementById('planStatusFilter').value;
+            const support = document.getElementById('planSupportFilter').value;
+
+            return data.filter(plan => {
+              const matchesTerm = !term || plan.name.toLowerCase().includes(term);
+              const matchesStatus = status === 'all' || plan.status === status;
+              const matchesSupport = support === 'all' || plan.support === support;
+              return matchesTerm && matchesStatus && matchesSupport;
+            });
+          }
+
+          function renderPlans() {
+            const filtered = applyFilters(plans);
+            plansTableBody.innerHTML = '';
+            filtered.forEach(plan => {
+              const tr = document.createElement('tr');
+              tr.innerHTML = `
+                <td>
+                  <div class="fw-semibold">${plan.name}</div>
+                  <small class="text-muted">${plan.desc}</small>
+                </td>
+                <td>${currency.format(plan.price)}</td>
+                <td>${plan.users} usuários · ${plan.apps} apps · ${plan.storage} GB</td>
+                <td>${plan.support}</td>
+                <td>${plan.trial} dias</td>
+                <td>${statusBadge(plan.status)}</td>
+                <td class="saas-table-actions">
+                  <button class="btn btn-sm btn-secondary btn-edit-plan" data-id="${plan.id}">Editar</button>
+                  <button class="btn btn-sm btn-danger btn-delete-plan" data-id="${plan.id}">Excluir</button>
+                </td>
+              `;
+              plansTableBody.appendChild(tr);
+            });
+
+            document.querySelectorAll('.btn-edit-plan').forEach(btn => {
+              btn.addEventListener('click', e => {
+                const id = parseInt(e.target.dataset.id, 10);
+                const plan = plans.find(item => item.id === id);
+                if (!plan) return;
+                document.getElementById('planId').value = plan.id;
+                document.getElementById('planName').value = plan.name;
+                document.getElementById('planPrice').value = plan.price;
+                document.getElementById('planTrialDays').value = plan.trial;
+                document.getElementById('planUsers').value = plan.users;
+                document.getElementById('planApps').value = plan.apps;
+                document.getElementById('planStorage').value = plan.storage;
+                document.getElementById('planSupport').value = plan.support;
+                document.getElementById('planStatus').value = plan.status;
+                document.getElementById('planDesc').value = plan.desc;
+                document.getElementById('planModalLabel').textContent = 'Editar plano';
+                planModal.show();
+              });
+            });
+
+            document.querySelectorAll('.btn-delete-plan').forEach(btn => {
+              btn.addEventListener('click', e => {
+                deletePlanId = parseInt(e.target.dataset.id, 10);
+                deletePlanModal.show();
+              });
+            });
+          }
+
+          document.getElementById('btnNewPlan').addEventListener('click', () => {
+            document.getElementById('planForm').reset();
+            document.getElementById('planId').value = '';
+            document.getElementById('planModalLabel').textContent = 'Novo plano';
+            planModal.show();
+          });
+
+          document.getElementById('savePlanBtn').addEventListener('click', () => {
+            const form = document.getElementById('planForm');
+            if (!form.reportValidity()) {
+              return;
+            }
+            const id = document.getElementById('planId').value;
+            const payload = {
+              id: id ? parseInt(id, 10) : Date.now(),
+              name: document.getElementById('planName').value,
+              price: parseFloat(document.getElementById('planPrice').value || '0'),
+              trial: parseInt(document.getElementById('planTrialDays').value || '0', 10),
+              users: parseInt(document.getElementById('planUsers').value || '0', 10),
+              apps: parseInt(document.getElementById('planApps').value || '0', 10),
+              storage: parseInt(document.getElementById('planStorage').value || '0', 10),
+              support: document.getElementById('planSupport').value,
+              status: document.getElementById('planStatus').value,
+              desc: document.getElementById('planDesc').value
+            };
+
+            if (id) {
+              const index = plans.findIndex(item => item.id === payload.id);
+              plans[index] = payload;
+            } else {
+              plans.push(payload);
+            }
+
+            planModal.hide();
+            renderStats();
+            renderPlans();
+          });
+
+          document.getElementById('confirmDeletePlanBtn').addEventListener('click', () => {
+            plans = plans.filter(item => item.id !== deletePlanId);
+            deletePlanModal.hide();
+            renderStats();
+            renderPlans();
+          });
+
+          document.getElementById('planSearch').addEventListener('input', renderPlans);
+          document.getElementById('planStatusFilter').addEventListener('change', renderPlans);
+          document.getElementById('planSupportFilter').addEventListener('change', renderPlans);
+
+          document.getElementById('resetPlanFilters').addEventListener('click', () => {
+            document.getElementById('planSearch').value = '';
+            document.getElementById('planStatusFilter').value = 'all';
+            document.getElementById('planSupportFilter').value = 'all';
+            renderPlans();
+          });
+
+          renderStats();
+          renderPlans();
+        </script>
+        <script src="../../assets/vendors/bootstrap-datepicker/bootstrap-datepicker.min.js"></script>
+        <script src="../../assets/js/off-canvas.js"></script>
+        <script src="../../assets/js/template.js"></script>
+        <script src="../../assets/js/settings.js"></script>
+        <script src="../../assets/js/hoverable-collapse.js"></script>
+        <script src="../../assets/js/todolist.js"></script>
+      </div>
+    </div>
+  </body>
+</html>
+
+

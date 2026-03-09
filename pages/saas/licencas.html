@@ -1,0 +1,502 @@
+﻿<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+    <title>SaaS Manager - Licenças</title>
+    <link rel="stylesheet" href="../../assets/vendors/feather/feather.css" />
+    <link rel="stylesheet" href="../../assets/vendors/mdi/css/materialdesignicons.min.css" />
+    <link rel="stylesheet" href="../../assets/vendors/ti-icons/css/themify-icons.css" />
+    <link rel="stylesheet" href="../../assets/vendors/font-awesome/css/font-awesome.min.css" />
+    <link rel="stylesheet" href="../../assets/vendors/typicons/typicons.css" />
+    <link rel="stylesheet" href="../../assets/vendors/simple-line-icons/css/simple-line-icons.css" />
+    <link rel="stylesheet" href="../../assets/vendors/css/vendor.bundle.base.css" />
+    <link rel="stylesheet" href="../../assets/vendors/bootstrap-datepicker/bootstrap-datepicker.min.css" />
+    <link rel="stylesheet" href="../../assets/css/style.css" />
+    <link rel="stylesheet" href="../../assets/css/saas-custom.css" />
+    <link rel="shortcut icon" href="../../assets/images/favicon.png" />
+  </head>
+  <body>
+    <div class="container-scroller">
+      <nav class="navbar default-layout col-lg-12 col-12 p-0 fixed-top d-flex align-items-top flex-row">
+        <div class="text-center navbar-brand-wrapper d-flex align-items-center justify-content-start">
+          <div class="me-3">
+            <button class="navbar-toggler navbar-toggler align-self-center" type="button" data-bs-toggle="minimize">
+              <span class="icon-menu"></span>
+            </button>
+          </div>
+          <div>
+            <a class="navbar-brand brand-logo" href="dashboard.html">
+              <img src="../../assets/images/logo.svg" alt="logo" />
+            </a>
+            <a class="navbar-brand brand-logo-mini" href="dashboard.html">
+              <img src="../../assets/images/logo-mini.svg" alt="logo" />
+            </a>
+          </div>
+        </div>
+        <div class="navbar-menu-wrapper d-flex align-items-top">
+          <ul class="navbar-nav">
+            <li class="nav-item fw-semibold d-none d-lg-block ms-0">
+              <h1 class="welcome-text">Licenças</h1>
+              <h3 class="welcome-sub-text">Controle de uso, vencimentos e renovações</h3>
+            </li>
+          </ul>
+        </div>
+      </nav>
+      <nav class="sidebar sidebar-offcanvas" id="sidebar">
+        <ul class="nav">
+          <li class="nav-item">
+            <a class="nav-link" href="dashboard.html">
+              <i class="mdi mdi-view-dashboard menu-icon"></i>
+              <span class="menu-title">Dashboard</span>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="aplicativos.html">
+              <i class="mdi mdi-application menu-icon"></i>
+              <span class="menu-title">Aplicativos</span>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="planos.html">
+              <i class="mdi mdi-currency-usd menu-icon"></i>
+              <span class="menu-title">Planos</span>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link active" href="licencas.html">
+              <i class="mdi mdi-key menu-icon"></i>
+              <span class="menu-title">Licenças</span>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="contas_receber.html">
+              <i class="mdi mdi-receipt menu-icon"></i>
+              <span class="menu-title">Contas a Receber</span>
+            </a>
+          </li>
+        </ul>
+      </nav>
+      <div class="main-panel">
+        <div class="content-wrapper">
+          <div class="row mb-4">
+            <div class="col-12">
+              <div class="d-flex flex-wrap justify-content-between align-items-center">
+                <div>
+                  <h2 class="saas-page-title">Licenças e contratos</h2>
+                  <p class="saas-subtitle mb-0">Acompanhe renovações, períodos de teste e expirações.</p>
+                </div>
+                <div class="d-flex flex-wrap gap-2 mt-3 mt-md-0">
+                  <button class="btn btn-outline-secondary">Exportar CSV</button>
+                  <button class="btn btn-primary" id="btnNewLicense">Nova licença</button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="col-sm-6 col-md-3 grid-margin stretch-card">
+              <div class="card saas-kpi">
+                <div class="card-body">
+                  <h5 class="card-title">Licenças ativas</h5>
+                  <p class="card-text" id="licenseActive">0</p>
+                  <small class="text-muted">Em produção</small>
+                </div>
+              </div>
+            </div>
+            <div class="col-sm-6 col-md-3 grid-margin stretch-card">
+              <div class="card saas-kpi">
+                <div class="card-body">
+                  <h5 class="card-title">Em teste</h5>
+                  <p class="card-text" id="licenseTrial">0</p>
+                  <small class="text-muted">Provas de conceito</small>
+                </div>
+              </div>
+            </div>
+            <div class="col-sm-6 col-md-3 grid-margin stretch-card">
+              <div class="card saas-kpi">
+                <div class="card-body">
+                  <h5 class="card-title">Vencendo</h5>
+                  <p class="card-text" id="licenseExpiring">0</p>
+                  <small class="text-muted">Próximos 30 dias</small>
+                </div>
+              </div>
+            </div>
+            <div class="col-sm-6 col-md-3 grid-margin stretch-card">
+              <div class="card saas-kpi">
+                <div class="card-body">
+                  <h5 class="card-title">Expiradas</h5>
+                  <p class="card-text" id="licenseExpired">0</p>
+                  <small class="text-muted">Revisar</small>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="row mb-3">
+            <div class="col-md-4 mb-2 mb-md-0">
+              <input type="text" class="form-control" id="licenseSearch" placeholder="Buscar por código, empresa ou app" />
+            </div>
+            <div class="col-md-3 mb-2 mb-md-0">
+              <select class="form-select saas-filter" id="licenseStatusFilter">
+                <option value="all">Todos os status</option>
+                <option value="Ativa">Ativa</option>
+                <option value="Em teste">Em teste</option>
+                <option value="Expirada">Expirada</option>
+              </select>
+            </div>
+            <div class="col-md-3 mb-2 mb-md-0">
+              <select class="form-select saas-filter" id="licensePlanFilter">
+                <option value="all">Todos os planos</option>
+                <option value="Starter">Starter</option>
+                <option value="Growth">Growth</option>
+                <option value="Pro">Pro</option>
+                <option value="Enterprise">Enterprise</option>
+              </select>
+            </div>
+            <div class="col-md-2 text-md-end">
+              <button class="btn btn-outline-primary w-100" id="resetLicenseFilters">Limpar filtros</button>
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="col-12 grid-margin stretch-card">
+              <div class="card">
+                <div class="card-body">
+                  <h4 class="card-title">Lista de licenças</h4>
+                  <div class="table-responsive">
+                    <table class="table table-striped">
+                      <thead>
+                        <tr>
+                          <th>Código</th>
+                          <th>Empresa</th>
+                          <th>Aplicativo</th>
+                          <th>Plano</th>
+                          <th>Usuários</th>
+                          <th>Início</th>
+                          <th>Vencimento</th>
+                          <th>Status</th>
+                          <th>Ações</th>
+                        </tr>
+                      </thead>
+                      <tbody id="licensesTableBody"></tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="modal fade" id="licenseModal" tabindex="-1" aria-labelledby="licenseModalLabel" aria-hidden="true">
+          <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title" id="licenseModalLabel">Nova licença</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+              </div>
+              <div class="modal-body">
+                <form id="licenseForm" class="row g-3">
+                  <input type="hidden" id="licenseId" />
+                  <div class="col-md-4">
+                    <label for="licenseCode" class="form-label">Código</label>
+                    <input type="text" class="form-control" id="licenseCode" required />
+                  </div>
+                  <div class="col-md-4">
+                    <label for="licenseCompany" class="form-label">Empresa</label>
+                    <input type="text" class="form-control" id="licenseCompany" required />
+                  </div>
+                  <div class="col-md-4">
+                    <label for="licenseApp" class="form-label">Aplicativo</label>
+                    <select class="form-select" id="licenseApp">
+                      <option value="ClickResto">ClickResto</option>
+                      <option value="FinanDesk">FinanDesk</option>
+                      <option value="Delivery Plus">Delivery Plus</option>
+                      <option value="ClinicFlow">ClinicFlow</option>
+                    </select>
+                  </div>
+                  <div class="col-md-4">
+                    <label for="licensePlan" class="form-label">Plano</label>
+                    <select class="form-select" id="licensePlan">
+                      <option value="Starter">Starter</option>
+                      <option value="Growth">Growth</option>
+                      <option value="Pro">Pro</option>
+                      <option value="Enterprise">Enterprise</option>
+                    </select>
+                  </div>
+                  <div class="col-md-4">
+                    <label for="licenseUsers" class="form-label">Usuários</label>
+                    <input type="number" class="form-control" id="licenseUsers" min="1" />
+                  </div>
+                  <div class="col-md-4">
+                    <label for="licenseStatus" class="form-label">Status</label>
+                    <select class="form-select" id="licenseStatus">
+                      <option value="Ativa">Ativa</option>
+                      <option value="Em teste">Em teste</option>
+                      <option value="Expirada">Expirada</option>
+                    </select>
+                  </div>
+                  <div class="col-md-6">
+                    <label for="licenseStart" class="form-label">Data de início</label>
+                    <input type="date" class="form-control" id="licenseStart" />
+                  </div>
+                  <div class="col-md-6">
+                    <label for="licenseExpiry" class="form-label">Vencimento</label>
+                    <input type="date" class="form-control" id="licenseExpiry" />
+                  </div>
+                  <div class="col-md-12">
+                    <label for="licenseNotes" class="form-label">Observações</label>
+                    <textarea class="form-control" id="licenseNotes" rows="3"></textarea>
+                  </div>
+                </form>
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-primary" id="saveLicenseBtn">Salvar</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="modal fade" id="deleteLicenseModal" tabindex="-1" aria-labelledby="deleteLicenseModalLabel" aria-hidden="true">
+          <div class="modal-dialog modal-sm">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title" id="deleteLicenseModalLabel">Confirmar exclusão</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+              </div>
+              <div class="modal-body">Tem certeza que deseja excluir esta licença?</div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-danger" id="confirmDeleteLicenseBtn">Excluir</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <script src="../../assets/vendors/js/vendor.bundle.base.js"></script>
+        <script>
+          let licenses = [
+            {
+              id: 1,
+              code: 'LIC-2401',
+              company: 'Resto Group',
+              app: 'ClickResto',
+              plan: 'Pro',
+              users: 24,
+              start: '2025-11-15',
+              expiry: '2026-03-22',
+              status: 'Ativa',
+              notes: 'Renovação automática ativa.'
+            },
+            {
+              id: 2,
+              code: 'LIC-2414',
+              company: 'Nova Capital',
+              app: 'FinanDesk',
+              plan: 'Enterprise',
+              users: 48,
+              start: '2024-08-02',
+              expiry: '2026-03-18',
+              status: 'Ativa',
+              notes: 'Revisar expansão de usuários.'
+            },
+            {
+              id: 3,
+              code: 'LIC-2420',
+              company: 'Mundo Foods',
+              app: 'Delivery Plus',
+              plan: 'Growth',
+              users: 31,
+              start: '2026-02-10',
+              expiry: '2026-03-28',
+              status: 'Em teste',
+              notes: 'Período de teste até final do mês.'
+            },
+            {
+              id: 4,
+              code: 'LIC-2409',
+              company: 'VidaMais',
+              app: 'ClinicFlow',
+              plan: 'Pro',
+              users: 19,
+              start: '2023-05-20',
+              expiry: '2026-02-28',
+              status: 'Expirada',
+              notes: 'Aguardando renegociação.'
+            }
+          ];
+
+          const licensesTableBody = document.getElementById('licensesTableBody');
+          const licenseModal = new bootstrap.Modal(document.getElementById('licenseModal'));
+          const deleteLicenseModal = new bootstrap.Modal(document.getElementById('deleteLicenseModal'));
+          let deleteLicenseId = null;
+
+          function formatDate(iso) {
+            if (!iso) return '-';
+            const parts = iso.split('-');
+            return `${parts[2]}/${parts[1]}/${parts[0]}`;
+          }
+
+          function statusBadge(status) {
+            const map = {
+              'Ativa': 'badge-ativo',
+              'Em teste': 'badge-teste',
+              'Expirada': 'badge-expirada'
+            };
+            const cls = map[status] || 'badge-expirada';
+            return `<span class="badge badge-status ${cls}">${status}</span>`;
+          }
+
+          function renderStats() {
+            const active = licenses.filter(item => item.status === 'Ativa').length;
+            const trial = licenses.filter(item => item.status === 'Em teste').length;
+            const expired = licenses.filter(item => item.status === 'Expirada').length;
+            const today = new Date();
+            const limit = new Date();
+            limit.setDate(today.getDate() + 30);
+            const expiring = licenses.filter(item => {
+              const expiryDate = new Date(item.expiry);
+              return expiryDate >= today && expiryDate <= limit;
+            }).length;
+
+            document.getElementById('licenseActive').textContent = active;
+            document.getElementById('licenseTrial').textContent = trial;
+            document.getElementById('licenseExpired').textContent = expired;
+            document.getElementById('licenseExpiring').textContent = expiring;
+          }
+
+          function applyFilters(data) {
+            const term = document.getElementById('licenseSearch').value.toLowerCase().trim();
+            const status = document.getElementById('licenseStatusFilter').value;
+            const plan = document.getElementById('licensePlanFilter').value;
+
+            return data.filter(item => {
+              const matchesTerm = !term || item.code.toLowerCase().includes(term) || item.company.toLowerCase().includes(term) || item.app.toLowerCase().includes(term);
+              const matchesStatus = status === 'all' || item.status === status;
+              const matchesPlan = plan === 'all' || item.plan === plan;
+              return matchesTerm && matchesStatus && matchesPlan;
+            });
+          }
+
+          function renderLicenses() {
+            const filtered = applyFilters(licenses);
+            licensesTableBody.innerHTML = '';
+            filtered.forEach(lic => {
+              const tr = document.createElement('tr');
+              tr.innerHTML = `
+                <td>${lic.code}</td>
+                <td>${lic.company}</td>
+                <td>${lic.app}</td>
+                <td>${lic.plan}</td>
+                <td>${lic.users}</td>
+                <td>${formatDate(lic.start)}</td>
+                <td>${formatDate(lic.expiry)}</td>
+                <td>${statusBadge(lic.status)}</td>
+                <td class="saas-table-actions">
+                  <button class="btn btn-sm btn-secondary btn-edit-license" data-id="${lic.id}">Editar</button>
+                  <button class="btn btn-sm btn-danger btn-delete-license" data-id="${lic.id}">Excluir</button>
+                </td>
+              `;
+              licensesTableBody.appendChild(tr);
+            });
+
+            document.querySelectorAll('.btn-edit-license').forEach(btn => {
+              btn.addEventListener('click', e => {
+                const id = parseInt(e.target.dataset.id, 10);
+                const lic = licenses.find(item => item.id === id);
+                if (!lic) return;
+                document.getElementById('licenseId').value = lic.id;
+                document.getElementById('licenseCode').value = lic.code;
+                document.getElementById('licenseCompany').value = lic.company;
+                document.getElementById('licenseApp').value = lic.app;
+                document.getElementById('licensePlan').value = lic.plan;
+                document.getElementById('licenseUsers').value = lic.users;
+                document.getElementById('licenseStatus').value = lic.status;
+                document.getElementById('licenseStart').value = lic.start;
+                document.getElementById('licenseExpiry').value = lic.expiry;
+                document.getElementById('licenseNotes').value = lic.notes;
+                document.getElementById('licenseModalLabel').textContent = 'Editar licença';
+                licenseModal.show();
+              });
+            });
+
+            document.querySelectorAll('.btn-delete-license').forEach(btn => {
+              btn.addEventListener('click', e => {
+                deleteLicenseId = parseInt(e.target.dataset.id, 10);
+                deleteLicenseModal.show();
+              });
+            });
+          }
+
+          document.getElementById('btnNewLicense').addEventListener('click', () => {
+            document.getElementById('licenseForm').reset();
+            document.getElementById('licenseId').value = '';
+            document.getElementById('licenseModalLabel').textContent = 'Nova licença';
+            licenseModal.show();
+          });
+
+          document.getElementById('saveLicenseBtn').addEventListener('click', () => {
+            const form = document.getElementById('licenseForm');
+            if (!form.reportValidity()) {
+              return;
+            }
+            const id = document.getElementById('licenseId').value;
+            const payload = {
+              id: id ? parseInt(id, 10) : Date.now(),
+              code: document.getElementById('licenseCode').value,
+              company: document.getElementById('licenseCompany').value,
+              app: document.getElementById('licenseApp').value,
+              plan: document.getElementById('licensePlan').value,
+              users: parseInt(document.getElementById('licenseUsers').value || '0', 10),
+              status: document.getElementById('licenseStatus').value,
+              start: document.getElementById('licenseStart').value,
+              expiry: document.getElementById('licenseExpiry').value,
+              notes: document.getElementById('licenseNotes').value
+            };
+
+            if (id) {
+              const index = licenses.findIndex(item => item.id === payload.id);
+              licenses[index] = payload;
+            } else {
+              licenses.push(payload);
+            }
+
+            licenseModal.hide();
+            renderStats();
+            renderLicenses();
+          });
+
+          document.getElementById('confirmDeleteLicenseBtn').addEventListener('click', () => {
+            licenses = licenses.filter(item => item.id !== deleteLicenseId);
+            deleteLicenseModal.hide();
+            renderStats();
+            renderLicenses();
+          });
+
+          document.getElementById('licenseSearch').addEventListener('input', renderLicenses);
+          document.getElementById('licenseStatusFilter').addEventListener('change', renderLicenses);
+          document.getElementById('licensePlanFilter').addEventListener('change', renderLicenses);
+
+          document.getElementById('resetLicenseFilters').addEventListener('click', () => {
+            document.getElementById('licenseSearch').value = '';
+            document.getElementById('licenseStatusFilter').value = 'all';
+            document.getElementById('licensePlanFilter').value = 'all';
+            renderLicenses();
+          });
+
+          renderStats();
+          renderLicenses();
+        </script>
+        <script src="../../assets/vendors/bootstrap-datepicker/bootstrap-datepicker.min.js"></script>
+        <script src="../../assets/js/off-canvas.js"></script>
+        <script src="../../assets/js/template.js"></script>
+        <script src="../../assets/js/settings.js"></script>
+        <script src="../../assets/js/hoverable-collapse.js"></script>
+        <script src="../../assets/js/todolist.js"></script>
+      </div>
+    </div>
+  </body>
+</html>
+
+

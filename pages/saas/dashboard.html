@@ -1,0 +1,359 @@
+﻿<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+    <title>SaaS Manager - Dashboard</title>
+    <link rel="stylesheet" href="../../assets/vendors/feather/feather.css" />
+    <link rel="stylesheet" href="../../assets/vendors/mdi/css/materialdesignicons.min.css" />
+    <link rel="stylesheet" href="../../assets/vendors/ti-icons/css/themify-icons.css" />
+    <link rel="stylesheet" href="../../assets/vendors/font-awesome/css/font-awesome.min.css" />
+    <link rel="stylesheet" href="../../assets/vendors/typicons/typicons.css" />
+    <link rel="stylesheet" href="../../assets/vendors/simple-line-icons/css/simple-line-icons.css" />
+    <link rel="stylesheet" href="../../assets/vendors/css/vendor.bundle.base.css" />
+    <link rel="stylesheet" href="../../assets/vendors/bootstrap-datepicker/bootstrap-datepicker.min.css" />
+    <link rel="stylesheet" href="../../assets/css/style.css" />
+    <link rel="stylesheet" href="../../assets/css/saas-custom.css" />
+    <link rel="shortcut icon" href="../../assets/images/favicon.png" />
+  </head>
+  <body class="with-welcome-text">
+    <div class="container-scroller">
+      <nav class="navbar default-layout col-lg-12 col-12 p-0 fixed-top d-flex align-items-top flex-row">
+        <div class="text-center navbar-brand-wrapper d-flex align-items-center justify-content-start">
+          <div class="me-3">
+            <button class="navbar-toggler navbar-toggler align-self-center" type="button" data-bs-toggle="minimize">
+              <span class="icon-menu"></span>
+            </button>
+          </div>
+          <div>
+            <a class="navbar-brand brand-logo" href="dashboard.html">
+              <img src="../../assets/images/logo.svg" alt="logo" />
+            </a>
+            <a class="navbar-brand brand-logo-mini" href="dashboard.html">
+              <img src="../../assets/images/logo-mini.svg" alt="logo" />
+            </a>
+          </div>
+        </div>
+        <div class="navbar-menu-wrapper d-flex align-items-top">
+          <ul class="navbar-nav">
+            <li class="nav-item fw-semibold d-none d-lg-block ms-0">
+              <h1 class="welcome-text">Olá, <span class="text-black fw-bold">Administrador</span></h1>
+              <h3 class="welcome-sub-text">Resumo estratégico do seu SaaS</h3>
+            </li>
+          </ul>
+          <ul class="navbar-nav ms-auto">
+            <li class="nav-item dropdown d-none d-lg-block">
+              <a class="nav-link" href="#">Atualizado agora</a>
+            </li>
+          </ul>
+        </div>
+      </nav>
+      <nav class="sidebar sidebar-offcanvas" id="sidebar">
+        <ul class="nav">
+          <li class="nav-item">
+            <a class="nav-link active" href="dashboard.html">
+              <i class="mdi mdi-view-dashboard menu-icon"></i>
+              <span class="menu-title">Dashboard</span>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="aplicativos.html">
+              <i class="mdi mdi-application menu-icon"></i>
+              <span class="menu-title">Aplicativos</span>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="planos.html">
+              <i class="mdi mdi-currency-usd menu-icon"></i>
+              <span class="menu-title">Planos</span>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="licencas.html">
+              <i class="mdi mdi-key menu-icon"></i>
+              <span class="menu-title">Licenças</span>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="contas_receber.html">
+              <i class="mdi mdi-receipt menu-icon"></i>
+              <span class="menu-title">Contas a Receber</span>
+            </a>
+          </li>
+        </ul>
+      </nav>
+      <div class="main-panel">
+        <div class="content-wrapper">
+          <div class="row mb-4">
+            <div class="col-12">
+              <div class="d-flex flex-wrap justify-content-between align-items-center">
+                <div>
+                  <h2 class="saas-page-title">Dashboard SaaS</h2>
+                  <p class="saas-subtitle mb-0">Visão geral de empresas, licenças e receita recorrente.</p>
+                </div>
+                <div class="d-flex flex-wrap gap-2 mt-3 mt-md-0">
+                  <button class="btn btn-outline-secondary">Exportar relatório</button>
+                  <a class="btn btn-primary" href="aplicativos.html">Novo aplicativo</a>
+                  <a class="btn btn-success" href="contas_receber.html">Nova cobrança</a>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="col-sm-6 col-md-3 grid-margin stretch-card">
+              <div class="card saas-kpi">
+                <div class="card-body">
+                  <h5 class="card-title">Aplicativos ativos</h5>
+                  <p class="card-text" id="kpiApps">0</p>
+                  <small class="text-muted">Em operação</small>
+                </div>
+              </div>
+            </div>
+            <div class="col-sm-6 col-md-3 grid-margin stretch-card">
+              <div class="card saas-kpi">
+                <div class="card-body">
+                  <h5 class="card-title">Empresas atendidas</h5>
+                  <p class="card-text" id="kpiCompanies">0</p>
+                  <small class="text-muted">Base ativa</small>
+                </div>
+              </div>
+            </div>
+            <div class="col-sm-6 col-md-3 grid-margin stretch-card">
+              <div class="card saas-kpi">
+                <div class="card-body">
+                  <h5 class="card-title">Licenças ativas</h5>
+                  <p class="card-text" id="kpiLicenses">0</p>
+                  <small class="text-muted">Total emitido</small>
+                </div>
+              </div>
+            </div>
+            <div class="col-sm-6 col-md-3 grid-margin stretch-card">
+              <div class="card saas-kpi">
+                <div class="card-body">
+                  <h5 class="card-title">MRR estimado</h5>
+                  <p class="card-text" id="kpiMrr">R$ 0,00</p>
+                  <small class="text-muted">Receita recorrente</small>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="col-lg-8 grid-margin stretch-card">
+              <div class="card">
+                <div class="card-body">
+                  <div class="d-flex justify-content-between align-items-center">
+                    <h4 class="card-title">Licenças a vencer (próximos 30 dias)</h4>
+                    <span class="badge saas-badge-soft">Prioridade</span>
+                  </div>
+                  <div class="table-responsive mt-3">
+                    <table class="table table-striped">
+                      <thead>
+                        <tr>
+                          <th>Código</th>
+                          <th>Empresa</th>
+                          <th>Aplicativo</th>
+                          <th>Plano</th>
+                          <th>Vencimento</th>
+                          <th>Status</th>
+                        </tr>
+                      </thead>
+                      <tbody id="expiringLicenses"></tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="col-lg-4 grid-margin stretch-card">
+              <div class="card">
+                <div class="card-body">
+                  <h4 class="card-title">Saúde financeira</h4>
+                  <p class="saas-subtitle">Comparativo do mês</p>
+                  <div class="saas-section-divider"></div>
+                  <div class="mb-3">
+                    <div class="d-flex justify-content-between">
+                      <span>Recebido</span>
+                      <span id="receivedValue">R$ 0,00</span>
+                    </div>
+                    <div class="progress mt-1">
+                      <div class="progress-bar bg-success" role="progressbar" style="width: 68%"></div>
+                    </div>
+                  </div>
+                  <div class="mb-3">
+                    <div class="d-flex justify-content-between">
+                      <span>Em aberto</span>
+                      <span id="openValue">R$ 0,00</span>
+                    </div>
+                    <div class="progress mt-1">
+                      <div class="progress-bar bg-warning" role="progressbar" style="width: 22%"></div>
+                    </div>
+                  </div>
+                  <div class="mb-3">
+                    <div class="d-flex justify-content-between">
+                      <span>Em atraso</span>
+                      <span id="overdueValue">R$ 0,00</span>
+                    </div>
+                    <div class="progress mt-1">
+                      <div class="progress-bar bg-danger" role="progressbar" style="width: 10%"></div>
+                    </div>
+                  </div>
+                  <small class="text-muted">Baseado nas contas a receber atuais.</small>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="col-lg-6 grid-margin stretch-card">
+              <div class="card">
+                <div class="card-body">
+                  <h4 class="card-title">Recebimentos recentes</h4>
+                  <div class="table-responsive mt-3">
+                    <table class="table">
+                      <thead>
+                        <tr>
+                          <th>Cliente</th>
+                          <th>Competência</th>
+                          <th>Valor</th>
+                          <th>Status</th>
+                        </tr>
+                      </thead>
+                      <tbody id="recentReceivables"></tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="col-lg-6 grid-margin stretch-card">
+              <div class="card">
+                <div class="card-body">
+                  <h4 class="card-title">Atividades recentes</h4>
+                  <ul class="list-group list-group-flush" id="recentActivities"></ul>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script src="../../assets/vendors/js/vendor.bundle.base.js"></script>
+    <script>
+      const currency = new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' });
+
+      const apps = [
+        { id: 1, name: 'ClickResto', company: 'Resto Group', plan: 'Pro', status: 'Ativo', mrr: 1290, licenses: 24 },
+        { id: 2, name: 'FinanDesk', company: 'Nova Capital', plan: 'Enterprise', status: 'Ativo', mrr: 4200, licenses: 48 },
+        { id: 3, name: 'Delivery Plus', company: 'Mundo Foods', plan: 'Growth', status: 'Ativo', mrr: 1980, licenses: 31 },
+        { id: 4, name: 'ClinicFlow', company: 'VidaMais', plan: 'Pro', status: 'Ativo', mrr: 1490, licenses: 19 }
+      ];
+
+      const licenses = [
+        { code: 'LIC-2401', company: 'Resto Group', app: 'ClickResto', plan: 'Pro', expires: '2026-03-22', status: 'Ativa' },
+        { code: 'LIC-2414', company: 'Nova Capital', app: 'FinanDesk', plan: 'Enterprise', expires: '2026-03-18', status: 'Ativa' },
+        { code: 'LIC-2420', company: 'Mundo Foods', app: 'Delivery Plus', plan: 'Growth', expires: '2026-03-28', status: 'Ativa' },
+        { code: 'LIC-2431', company: 'VidaMais', app: 'ClinicFlow', plan: 'Pro', expires: '2026-03-15', status: 'Em teste' }
+      ];
+
+      const receivables = [
+        { client: 'Resto Group', competence: '03/2026', value: 1290, status: 'Pago' },
+        { client: 'Nova Capital', competence: '03/2026', value: 4200, status: 'Pendente' },
+        { client: 'Mundo Foods', competence: '03/2026', value: 1980, status: 'Em atraso' },
+        { client: 'VidaMais', competence: '03/2026', value: 1490, status: 'Pago' }
+      ];
+
+      const activities = [
+        'Plano Enterprise atualizado para Nova Capital.',
+        'Nova licença criada para Delivery Plus.',
+        'Cobrança de março enviada para Resto Group.',
+        'Renovação automática confirmada para ClinicFlow.'
+      ];
+
+      function formatDate(iso) {
+        if (!iso) return '-';
+        const parts = iso.split('-');
+        return `${parts[2]}/${parts[1]}/${parts[0]}`;
+      }
+
+      function statusBadge(status) {
+        const map = {
+          'Ativa': 'badge-ativo',
+          'Em teste': 'badge-teste',
+          'Expirada': 'badge-expirada',
+          'Pago': 'badge-ativo',
+          'Pendente': 'badge-pendente',
+          'Em atraso': 'badge-atraso'
+        };
+        const cls = map[status] || 'badge-expirada';
+        return `<span class="badge badge-status ${cls}">${status}</span>`;
+      }
+
+      function renderDashboard() {
+        const totalApps = apps.length;
+        const companies = new Set(apps.map(app => app.company)).size;
+        const totalLicenses = apps.reduce((sum, app) => sum + app.licenses, 0);
+        const mrr = apps.reduce((sum, app) => sum + app.mrr, 0);
+
+        document.getElementById('kpiApps').textContent = totalApps;
+        document.getElementById('kpiCompanies').textContent = companies;
+        document.getElementById('kpiLicenses').textContent = totalLicenses;
+        document.getElementById('kpiMrr').textContent = currency.format(mrr);
+
+        const expiringBody = document.getElementById('expiringLicenses');
+        expiringBody.innerHTML = '';
+        licenses.forEach(item => {
+          const tr = document.createElement('tr');
+          tr.innerHTML = `
+            <td>${item.code}</td>
+            <td>${item.company}</td>
+            <td>${item.app}</td>
+            <td>${item.plan}</td>
+            <td>${formatDate(item.expires)}</td>
+            <td>${statusBadge(item.status)}</td>
+          `;
+          expiringBody.appendChild(tr);
+        });
+
+        const recentBody = document.getElementById('recentReceivables');
+        recentBody.innerHTML = '';
+        receivables.forEach(item => {
+          const tr = document.createElement('tr');
+          tr.innerHTML = `
+            <td>${item.client}</td>
+            <td>${item.competence}</td>
+            <td>${currency.format(item.value)}</td>
+            <td>${statusBadge(item.status)}</td>
+          `;
+          recentBody.appendChild(tr);
+        });
+
+        const activityList = document.getElementById('recentActivities');
+        activityList.innerHTML = '';
+        activities.forEach(text => {
+          const li = document.createElement('li');
+          li.className = 'list-group-item d-flex justify-content-between align-items-center';
+          li.innerHTML = `<span>${text}</span><i class="mdi mdi-check-circle text-success"></i>`;
+          activityList.appendChild(li);
+        });
+
+        const received = receivables.filter(r => r.status === 'Pago').reduce((sum, r) => sum + r.value, 0);
+        const open = receivables.filter(r => r.status === 'Pendente').reduce((sum, r) => sum + r.value, 0);
+        const overdue = receivables.filter(r => r.status === 'Em atraso').reduce((sum, r) => sum + r.value, 0);
+
+        document.getElementById('receivedValue').textContent = currency.format(received);
+        document.getElementById('openValue').textContent = currency.format(open);
+        document.getElementById('overdueValue').textContent = currency.format(overdue);
+      }
+
+      renderDashboard();
+    </script>
+    <script src="../../assets/vendors/bootstrap-datepicker/bootstrap-datepicker.min.js"></script>
+    <script src="../../assets/js/off-canvas.js"></script>
+    <script src="../../assets/js/template.js"></script>
+    <script src="../../assets/js/settings.js"></script>
+    <script src="../../assets/js/hoverable-collapse.js"></script>
+    <script src="../../assets/js/todolist.js"></script>
+  </body>
+</html>
+

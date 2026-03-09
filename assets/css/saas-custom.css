@@ -1,0 +1,125 @@
+:root {
+  --saas-accent: #1f7a8c;
+  --saas-accent-2: #f4b942;
+  --saas-accent-3: #0f3d3e;
+  --saas-bg: #f5f7fa;
+  --saas-card: #ffffff;
+  --saas-muted: #6b7280;
+}
+
+body {
+  background: var(--saas-bg);
+}
+
+.saas-page-title {
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+.saas-subtitle {
+  color: var(--saas-muted);
+}
+
+.saas-kpi {
+  border-left: 4px solid var(--saas-accent);
+}
+
+.saas-kpi .card-title {
+  font-size: 0.95rem;
+}
+
+.saas-kpi .card-text {
+  font-size: 1.25rem;
+  font-weight: 700;
+}
+
+.saas-hero {
+  background: linear-gradient(135deg, var(--saas-accent-3), var(--saas-accent) 60%, var(--saas-accent-2) 120%);
+  color: #fff;
+  border-radius: 1rem;
+}
+
+.saas-hero .btn {
+  border-color: #fff;
+}
+
+.saas-badge-soft {
+  background: rgba(31, 122, 140, 0.12);
+  color: var(--saas-accent);
+  border: 1px solid rgba(31, 122, 140, 0.2);
+}
+
+.saas-table-actions .btn {
+  margin-right: 0.35rem;
+}
+
+.saas-filter {
+  min-width: 160px;
+}
+
+.saas-auth {
+  background: linear-gradient(180deg, rgba(15, 61, 62, 0.9), rgba(31, 122, 140, 0.8)), url("../../assets/images/dashboard/img_6.jpg");
+  background-size: cover;
+  background-position: center;
+}
+
+.saas-auth .auth-form-light {
+  border-radius: 1.5rem;
+  overflow: hidden;
+  box-shadow: 0 24px 48px rgba(15, 61, 62, 0.25);
+}
+
+.saas-auth-side {
+  background: rgba(15, 61, 62, 0.92);
+  color: #fff;
+}
+
+.saas-auth-side h3 {
+  font-weight: 700;
+}
+
+.saas-auth-side .feature {
+  display: flex;
+  gap: 0.75rem;
+  align-items: flex-start;
+  margin-bottom: 1rem;
+}
+
+.saas-auth-side .feature i {
+  font-size: 1.4rem;
+}
+
+.badge-status {
+  font-weight: 600;
+}
+
+.badge-status.badge-ativo {
+  background: rgba(34, 197, 94, 0.15);
+  color: #166534;
+}
+
+.badge-status.badge-pendente {
+  background: rgba(245, 158, 11, 0.15);
+  color: #92400e;
+}
+
+.badge-status.badge-atraso {
+  background: rgba(239, 68, 68, 0.15);
+  color: #991b1b;
+}
+
+.badge-status.badge-expirada {
+  background: rgba(148, 163, 184, 0.3);
+  color: #475569;
+}
+
+.badge-status.badge-teste {
+  background: rgba(59, 130, 246, 0.15);
+  color: #1e3a8a;
+}
+
+.saas-section-divider {
+  height: 1px;
+  background: rgba(15, 61, 62, 0.1);
+  margin: 1.5rem 0;
+}
