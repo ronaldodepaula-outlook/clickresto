@@ -6,6 +6,28 @@ $userName = $_SESSION['user_name'] ?? 'Usuario';
 $userEmail = $_SESSION['user_email'] ?? '';
 $userNameSafe = htmlspecialchars($userName, ENT_QUOTES, 'UTF-8');
 $userEmailSafe = htmlspecialchars($userEmail, ENT_QUOTES, 'UTF-8');
+$licencaStatus = $_SESSION['licenca_status'] ?? '';
+$licencaMensagem = $_SESSION['licenca_mensagem'] ?? '';
+$licencaDiasRestantes = $_SESSION['licenca_dias_restantes'] ?? null;
+$licencaDiasExpirados = $_SESSION['licenca_dias_expirados'] ?? null;
+$licencaDuracaoDias = $_SESSION['licenca_duracao_dias'] ?? null;
+$licencaDuracaoMeses = $_SESSION['licenca_duracao_meses'] ?? null;
+$licencaDuracaoAnos = $_SESSION['licenca_duracao_anos'] ?? null;
+$licencaStatusNormalized = strtolower(trim((string)$licencaStatus));
+$licencaMensagemSafe = $licencaMensagem !== '' ? htmlspecialchars($licencaMensagem, ENT_QUOTES, 'UTF-8') : '';
+$licencaDiasRestantesSafe = is_numeric($licencaDiasRestantes) ? (string)(int)$licencaDiasRestantes : '';
+$licencaStatusLabel = '';
+if ($licencaStatusNormalized === 'expirada') {
+  $licencaStatusLabel = 'Licenca expirada';
+} elseif ($licencaStatusNormalized === 'ok') {
+  $licencaStatusLabel = 'Licenca ok';
+} elseif ($licencaStatus !== '') {
+  $licencaStatusLabel = 'Licenca ' . (string)$licencaStatus;
+}
+$licencaStatusLabelSafe = $licencaStatusLabel !== '' ? htmlspecialchars($licencaStatusLabel, ENT_QUOTES, 'UTF-8') : '';
+$licencaBadgeClass = ($licencaStatusNormalized === 'expirada') ? 'badge-danger' : 'badge-success';
+$licencaIcon = ($licencaStatusNormalized === 'expirada') ? 'mdi-alert-circle-outline' : 'mdi-check-circle-outline';
+$showLicenca = ($licencaStatusLabelSafe !== '' || $licencaMensagemSafe !== '' || $licencaDiasRestantesSafe !== '');
 $hour = (int)date('H');
 if ($hour < 12) {
   $greeting = 'Bom dia';
@@ -33,6 +55,19 @@ if ($hour < 12) {
   }
   body.sidebar-icon-only .navbar .navbar-brand-wrapper .brand-logo {
     display: none;
+  }
+  .navbar .nav-link.count-indicator {
+    position: relative;
+  }
+  .navbar .nav-link .licenca-count {
+    position: absolute;
+    top: -4px;
+    right: -6px;
+    font-size: 0.65rem;
+    line-height: 1;
+    padding: 0.2rem 0.35rem;
+    min-width: 1.2rem;
+    text-align: center;
   }
 </style>
 <nav class="navbar default-layout col-lg-12 col-12 p-0 fixed-top d-flex align-items-top flex-row">
@@ -109,40 +144,57 @@ if ($hour < 12) {
             <li class="nav-item dropdown">
               <a class="nav-link count-indicator" id="notificationDropdown" href="#" data-bs-toggle="dropdown">
                 <i class="icon-bell"></i>
-                <span class="count"></span>
+                <?php if ($licencaDiasRestantesSafe !== ''): ?>
+                  <span class="badge badge-pill badge-warning licenca-count"><?php echo $licencaDiasRestantesSafe; ?></span>
+                <?php else: ?>
+                  <span class="count"></span>
+                <?php endif; ?>
               </a>
               <div class="dropdown-menu dropdown-menu-right navbar-dropdown preview-list pb-0" aria-labelledby="notificationDropdown">
                 <a class="dropdown-item py-3 border-bottom">
-                  <p class="mb-0 fw-medium float-start">You have 4 new notifications </p>
-                  <span class="badge badge-pill badge-primary float-end">View all</span>
+                  <p class="mb-0 fw-medium float-start">Status da licenca</p>
+                  <?php if ($licencaDiasRestantesSafe !== ''): ?>
+                    <span class="badge badge-pill <?php echo $licencaBadgeClass; ?> float-end"><?php echo $licencaDiasRestantesSafe; ?> dias</span>
+                  <?php endif; ?>
                 </a>
-                <a class="dropdown-item preview-item py-3">
-                  <div class="preview-thumbnail">
-                    <i class="mdi mdi-alert m-auto text-primary"></i>
-                  </div>
-                  <div class="preview-item-content">
-                    <h6 class="preview-subject fw-normal text-dark mb-1">Application Error</h6>
-                    <p class="fw-light small-text mb-0"> Just now </p>
-                  </div>
-                </a>
-                <a class="dropdown-item preview-item py-3">
-                  <div class="preview-thumbnail">
-                    <i class="mdi mdi-lock-outline m-auto text-primary"></i>
-                  </div>
-                  <div class="preview-item-content">
-                    <h6 class="preview-subject fw-normal text-dark mb-1">Settings</h6>
-                    <p class="fw-light small-text mb-0"> Private message </p>
-                  </div>
-                </a>
-                <a class="dropdown-item preview-item py-3">
-                  <div class="preview-thumbnail">
-                    <i class="mdi mdi-airballoon m-auto text-primary"></i>
-                  </div>
-                  <div class="preview-item-content">
-                    <h6 class="preview-subject fw-normal text-dark mb-1">New user registration</h6>
-                    <p class="fw-light small-text mb-0"> 2 days ago </p>
-                  </div>
-                </a>
+                <?php if ($showLicenca): ?>
+                  <a class="dropdown-item preview-item py-3">
+                    <div class="preview-thumbnail">
+                      <i class="mdi <?php echo $licencaIcon; ?> m-auto text-<?php echo $licencaStatusNormalized === 'expirada' ? 'danger' : 'success'; ?>"></i>
+                    </div>
+                    <div class="preview-item-content">
+                      <?php if ($licencaStatusLabelSafe !== ''): ?>
+                        <h6 class="preview-subject fw-normal text-dark mb-1"><?php echo $licencaStatusLabelSafe; ?></h6>
+                      <?php endif; ?>
+                      <?php if ($licencaMensagemSafe !== ''): ?>
+                        <p class="fw-light small-text mb-0"><?php echo $licencaMensagemSafe; ?></p>
+                      <?php endif; ?>
+                      <?php if ($licencaDiasRestantesSafe !== ''): ?>
+                        <p class="fw-light small-text mb-0">Dias restantes: <?php echo $licencaDiasRestantesSafe; ?></p>
+                      <?php endif; ?>
+                      <?php if (is_numeric($licencaDiasExpirados) && (int)$licencaDiasExpirados > 0): ?>
+                        <p class="fw-light small-text mb-0">Dias expirados: <?php echo (int)$licencaDiasExpirados; ?></p>
+                      <?php endif; ?>
+                      <?php if (is_numeric($licencaDuracaoDias) && (int)$licencaDuracaoDias > 0): ?>
+                        <p class="fw-light small-text mb-0">Duracao: <?php echo (int)$licencaDuracaoDias; ?> dias</p>
+                      <?php elseif (is_numeric($licencaDuracaoMeses) && (int)$licencaDuracaoMeses > 0): ?>
+                        <p class="fw-light small-text mb-0">Duracao: <?php echo (int)$licencaDuracaoMeses; ?> meses</p>
+                      <?php elseif (is_numeric($licencaDuracaoAnos) && (int)$licencaDuracaoAnos > 0): ?>
+                        <p class="fw-light small-text mb-0">Duracao: <?php echo (int)$licencaDuracaoAnos; ?> anos</p>
+                      <?php endif; ?>
+                    </div>
+                  </a>
+                <?php else: ?>
+                  <a class="dropdown-item preview-item py-3">
+                    <div class="preview-thumbnail">
+                      <i class="mdi mdi-information-outline m-auto text-muted"></i>
+                    </div>
+                    <div class="preview-item-content">
+                      <h6 class="preview-subject fw-normal text-dark mb-1">Licenca</h6>
+                      <p class="fw-light small-text mb-0">Sem informacoes de licenca</p>
+                    </div>
+                  </a>
+                <?php endif; ?>
               </div>
             </li>
             <li class="nav-item dropdown">

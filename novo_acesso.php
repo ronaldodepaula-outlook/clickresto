@@ -1,9 +1,138 @@
+<?php
+require_once __DIR__ . '/classe/env.php';
+loadEnvFile(__DIR__ . '/.env');
+
+$apiBase = rtrim((string)env('API_BASE_URL', ''), '/');
+$apiError = '';
+$apiSuccess = '';
+$apiResult = null;
+
+$form = [
+  'empresa' => [
+    'nome' => '',
+    'nome_fantasia' => '',
+    'cnpj' => '',
+    'telefone' => '',
+    'email' => '',
+    'endereco' => '',
+    'cidade' => '',
+    'estado' => '',
+  ],
+  'usuario' => [
+    'nome' => '',
+    'email' => '',
+    'senha' => '',
+    'confirmar' => '',
+  ],
+];
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+  $form['empresa']['nome'] = trim((string)($_POST['empresa']['nome'] ?? ''));
+  $form['empresa']['nome_fantasia'] = trim((string)($_POST['empresa']['nome_fantasia'] ?? ''));
+  $form['empresa']['cnpj'] = trim((string)($_POST['empresa']['cnpj'] ?? ''));
+  $form['empresa']['telefone'] = trim((string)($_POST['empresa']['telefone'] ?? ''));
+  $form['empresa']['email'] = trim((string)($_POST['empresa']['email'] ?? ''));
+  $form['empresa']['endereco'] = trim((string)($_POST['empresa']['endereco'] ?? ''));
+  $form['empresa']['cidade'] = trim((string)($_POST['empresa']['cidade'] ?? ''));
+  $form['empresa']['estado'] = trim((string)($_POST['empresa']['estado'] ?? ''));
+
+  $form['usuario']['nome'] = trim((string)($_POST['usuario']['nome'] ?? ''));
+  $form['usuario']['email'] = trim((string)($_POST['usuario']['email'] ?? ''));
+  $form['usuario']['senha'] = (string)($_POST['usuario']['senha'] ?? '');
+  $form['usuario']['confirmar'] = (string)($_POST['usuario']['confirmar'] ?? '');
+
+  $requiredEmpresa = [
+    'nome',
+    'nome_fantasia',
+    'cnpj',
+    'telefone',
+    'email',
+    'endereco',
+    'cidade',
+    'estado',
+  ];
+  $requiredUsuario = [
+    'nome',
+    'email',
+    'senha',
+    'confirmar',
+  ];
+
+  $missing = false;
+  foreach ($requiredEmpresa as $field) {
+    if ($form['empresa'][$field] === '') {
+      $missing = true;
+      break;
+    }
+  }
+  if (!$missing) {
+    foreach ($requiredUsuario as $field) {
+      if ($form['usuario'][$field] === '') {
+        $missing = true;
+        break;
+      }
+    }
+  }
+
+  if ($apiBase === '') {
+    $apiError = 'API_BASE_URL nao configurada no arquivo .env.';
+  } elseif ($missing) {
+    $apiError = 'Preencha todos os campos obrigatorios.';
+  } elseif ($form['usuario']['senha'] !== $form['usuario']['confirmar']) {
+    $apiError = 'As senhas nao conferem.';
+  } else {
+    $payload = json_encode([
+      'empresa' => [
+        'nome' => $form['empresa']['nome'],
+        'nome_fantasia' => $form['empresa']['nome_fantasia'],
+        'cnpj' => $form['empresa']['cnpj'],
+        'telefone' => $form['empresa']['telefone'],
+        'email' => $form['empresa']['email'],
+        'endereco' => $form['empresa']['endereco'],
+        'cidade' => $form['empresa']['cidade'],
+        'estado' => $form['empresa']['estado'],
+      ],
+      'usuario' => [
+        'nome' => $form['usuario']['nome'],
+        'email' => $form['usuario']['email'],
+        'senha' => $form['usuario']['senha'],
+      ],
+    ]);
+
+    $ch = curl_init($apiBase . '/public/cadastro-trial');
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    curl_setopt($ch, CURLOPT_POST, true);
+    curl_setopt($ch, CURLOPT_HTTPHEADER, [
+      'Content-Type: application/json',
+      'Accept: application/json',
+    ]);
+    curl_setopt($ch, CURLOPT_POSTFIELDS, $payload);
+
+    $response = curl_exec($ch);
+    $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+    $curlError = curl_error($ch);
+    $ch = null;
+
+    if ($response === false) {
+      $apiError = 'Falha ao conectar na API. ' . $curlError;
+    } else {
+      $decoded = json_decode($response, true);
+      if ($httpCode >= 200 && $httpCode < 300 && is_array($decoded)) {
+        $apiResult = $decoded;
+        $apiSuccess = 'Cadastro realizado com sucesso.';
+      } else {
+        $apiError = $decoded['message'] ?? 'Nao foi possivel concluir o cadastro.';
+      }
+    }
+  }
+}
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Novo acesso - Wizard funcional</title>
+  <title>Novo acesso - Cadastro Trial</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/themify-icons@0.1.2/css/themify-icons.css">
   <style>
@@ -12,13 +141,13 @@
       padding: 0;
       box-sizing: border-box;
     }
-    
+
     html, body {
       height: 100vh;
       overflow: hidden;
       font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
     }
-    
+
     .container-scroller,
     .page-body-wrapper,
     .full-page-wrapper,
@@ -28,11 +157,11 @@
       max-height: 100vh;
       overflow: hidden;
     }
-    
+
     .auth-img-bg {
       background-color: #ffffff;
     }
-    
+
     .login-half-bg {
       background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
       position: relative;
@@ -42,7 +171,7 @@
       justify-content: center;
       height: 100vh;
     }
-    
+
     .login-half-bg::before {
       content: "";
       position: absolute;
@@ -51,7 +180,7 @@
       opacity: 0.25;
       mix-blend-mode: overlay;
     }
-    
+
     .right-image-content {
       position: relative;
       z-index: 2;
@@ -60,14 +189,14 @@
       max-width: 80%;
       margin: 0 auto;
     }
-    
+
     .right-image-content h2 {
       font-weight: 300;
       font-size: 2.2rem;
       letter-spacing: 1px;
       text-shadow: 0 2px 10px rgba(0,0,0,0.2);
     }
-    
+
     .form-container {
       height: 100vh;
       display: flex;
@@ -76,10 +205,10 @@
       padding: 1rem;
       overflow: hidden;
     }
-    
+
     .auth-form-transparent {
       width: 100%;
-      max-width: 800px;
+      max-width: 820px;
       margin: 0 auto;
       background: rgba(255, 255, 255, 0.95);
       border-radius: 28px;
@@ -91,37 +220,37 @@
       scrollbar-width: thin;
       scrollbar-color: #cbd5e0 #f1f5f9;
     }
-    
+
     .auth-form-transparent::-webkit-scrollbar {
       width: 4px;
     }
-    
+
     .auth-form-transparent::-webkit-scrollbar-track {
       background: #f1f5f9;
       border-radius: 10px;
     }
-    
+
     .auth-form-transparent::-webkit-scrollbar-thumb {
       background: #cbd5e0;
       border-radius: 10px;
     }
-    
+
     .brand-logo {
       margin-bottom: 0.75rem;
     }
-    
+
     .brand-logo img {
       max-height: 38px;
       border-radius: 30px;
     }
-    
+
     .wizard-steps {
       display: flex;
       gap: 0.4rem;
       flex-wrap: wrap;
       margin-bottom: 0.75rem;
     }
-    
+
     .wizard-step {
       display: inline-flex;
       align-items: center;
@@ -134,18 +263,18 @@
       font-weight: 600;
       transition: all 0.3s ease;
     }
-    
+
     .wizard-step.active {
       background: #667eea;
       color: #fff;
       transform: scale(1.02);
     }
-    
+
     .wizard-step.completed {
       background: #10b981;
       color: #fff;
     }
-    
+
     .wizard-step .step-index {
       display: inline-flex;
       align-items: center;
@@ -157,21 +286,21 @@
       font-size: 0.7rem;
       font-weight: 700;
     }
-    
+
     .wizard-content {
       position: relative;
       min-height: 320px;
     }
-    
+
     .wizard-pane {
       display: none;
       animation: fadeIn 0.5s ease;
     }
-    
+
     .wizard-pane.active {
       display: block;
     }
-    
+
     @keyframes fadeIn {
       from {
         opacity: 0;
@@ -182,7 +311,7 @@
         transform: translateY(0);
       }
     }
-    
+
     .wizard-section {
       border: 1px solid #eef1f6;
       border-radius: 16px;
@@ -190,18 +319,18 @@
       margin-bottom: 0.75rem;
       background: #ffffff;
     }
-    
+
     .wizard-section h6 {
       font-weight: 700;
       margin-bottom: 0.5rem;
       color: #1e1e2f;
       font-size: 0.9rem;
     }
-    
+
     .form-group {
       margin-bottom: 0.75rem;
     }
-    
+
     .form-group label {
       font-weight: 500;
       font-size: 0.7rem;
@@ -210,14 +339,14 @@
       color: #4a4a4a;
       margin-bottom: 0.2rem;
     }
-    
+
     .input-group-text {
       border: 1px solid #e0e4e8;
       border-right: none;
       background: white;
       padding: 0.4rem 0.8rem;
     }
-    
+
     .form-control {
       border: 1px solid #e0e4e8;
       border-left: none;
@@ -226,38 +355,26 @@
       background: white;
       transition: all 0.2s;
     }
-    
+
     .form-control:focus {
       border-color: #667eea;
       box-shadow: none;
       outline: none;
     }
-    
+
     .form-control.is-invalid {
       border-color: #dc3545;
     }
-    
+
     .input-group:focus-within .input-group-text {
       border-color: #667eea;
     }
-    
+
     .invalid-feedback {
       font-size: 0.7rem;
       margin-top: 0.2rem;
     }
-    
-    textarea.form-control {
-      padding: 0.4rem 0.8rem;
-      font-size: 0.85rem;
-      resize: none;
-    }
-    
-    small.text-muted {
-      font-size: 0.7rem;
-      display: block;
-      margin-top: 0.2rem;
-    }
-    
+
     .wizard-actions {
       display: flex;
       gap: 0.75rem;
@@ -265,7 +382,7 @@
       justify-content: space-between;
       margin-top: 0.75rem;
     }
-    
+
     .btn {
       padding: 0.5rem 1rem;
       font-size: 0.85rem;
@@ -273,45 +390,45 @@
       font-weight: 500;
       transition: all 0.2s;
     }
-    
+
     .btn:disabled {
       opacity: 0.5;
       cursor: not-allowed;
     }
-    
+
     .btn-primary {
       background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
       border: none;
       box-shadow: 0 8px 15px -5px rgba(102, 126, 234, 0.4);
     }
-    
+
     .btn-primary:hover:not(:disabled) {
       background: linear-gradient(135deg, #5a6fd6 0%, #6a4292 100%);
       transform: translateY(-1px);
       box-shadow: 0 12px 20px -8px rgba(102, 126, 234, 0.5);
     }
-    
+
     .btn-outline-primary {
       border-color: #667eea;
       color: #667eea;
     }
-    
+
     .btn-outline-primary:hover:not(:disabled) {
       background: #667eea;
       color: white;
     }
-    
+
     .btn-success {
       background: #10b981;
       border: none;
     }
-    
+
     .progress {
       height: 4px;
       margin: 0.5rem 0;
       border-radius: 2px;
     }
-    
+
     .summary-item {
       display: flex;
       justify-content: space-between;
@@ -319,40 +436,52 @@
       border-bottom: 1px dashed #eef1f6;
       font-size: 0.85rem;
     }
-    
+
     .summary-item:last-child {
       border-bottom: none;
     }
-    
+
     .summary-label {
       color: #6c757d;
       font-weight: 500;
     }
-    
+
     .summary-value {
       color: #1e1e2f;
       font-weight: 600;
     }
-    
+
+    .info-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      background: #f5f6ff;
+      color: #4f46e5;
+      padding: 0.35rem 0.6rem;
+      border-radius: 999px;
+      font-size: 0.75rem;
+      font-weight: 600;
+    }
+
     @media (max-width: 991px) {
       .login-half-bg {
         display: none;
       }
-      
+
       .col-lg-6 {
         width: 100%;
       }
-      
+
       .auth-form-transparent {
         max-width: 600px;
       }
     }
-    
+
     h4 {
       font-size: 1.25rem;
       margin-bottom: 0.2rem !important;
     }
-    
+
     .text-secondary {
       font-size: 0.8rem;
       margin-bottom: 0.75rem !important;
@@ -364,160 +493,269 @@
     <div class="container-fluid page-body-wrapper full-page-wrapper">
       <div class="content-wrapper d-flex align-items-stretch auth auth-img-bg p-0">
         <div class="row flex-grow g-0 w-100">
-          <!-- Coluna esquerda: formulário com wizard funcional -->
           <div class="col-lg-6">
             <div class="form-container">
               <div class="auth-form-transparent text-left p-3">
                 <div class="brand-logo">
                   <img src="https://via.placeholder.com/130x38/667eea/ffffff?text=Your+Logo" alt="logo">
                 </div>
-                
+
                 <h4 class="fw-semibold" style="color: #1e1e2f;">Criar novo acesso</h4>
-                <p class="text-secondary mb-2">Preencha os dados para iniciar sua conta.</p>
+                <p class="text-secondary mb-2">Preencha os dados para iniciar sua conta trial.</p>
 
-                <!-- Barra de progresso -->
-                <div class="progress">
-                  <div class="progress-bar bg-primary" id="progressBar" role="progressbar" style="width: 25%"></div>
-                </div>
+                <?php if ($apiError !== ''): ?>
+                  <div class="alert alert-danger py-2" role="alert" style="font-size: 0.85rem;">
+                    <?php echo htmlspecialchars($apiError, ENT_QUOTES, 'UTF-8'); ?>
+                  </div>
+                <?php endif; ?>
 
-                <!-- Wizard Steps -->
+                <?php if ($apiSuccess !== '' && is_array($apiResult)): ?>
+                  <div class="wizard-section">
+                    <h6>Cadastro concluido com sucesso</h6>
+                    <p class="text-secondary" style="font-size: 0.85rem;">
+                      Sua conta foi criada. Agora voce pode acessar o sistema usando seus dados.
+                    </p>
+                    <a class="btn btn-success mt-2" href="login.php">Ir para login</a>
+                  </div>
+                <?php else: ?>
+                  <div class="progress">
+                    <div class="progress-bar bg-primary" id="progressBar" role="progressbar" style="width: 25%"></div>
+                  </div>
+
                 <div class="wizard-steps" id="wizardSteps">
                   <div class="wizard-step active" data-step="1">
-                    <span class="step-index">1</span> Account
+                    <span class="step-index">1</span> Empresa
                   </div>
                   <div class="wizard-step" data-step="2">
-                    <span class="step-index">2</span> Profile
+                    <span class="step-index">2</span> Usuario
                   </div>
                   <div class="wizard-step" data-step="3">
-                    <span class="step-index">3</span> Comments
+                    <span class="step-index">3</span> Plano & Licenca
                   </div>
                   <div class="wizard-step" data-step="4">
-                    <span class="step-index">4</span> Finish
+                    <span class="step-index">4</span> Confirmacao
                   </div>
                 </div>
 
-                <form id="wizardForm">
-                  <!-- Wizard Content -->
+                <form id="wizardForm" method="POST" action="">
                   <div class="wizard-content">
-                    <!-- Step 1: Account -->
                     <div class="wizard-pane active" id="step1">
                       <div class="wizard-section">
-                        <h6>Account Information</h6>
-                        <div class="form-group">
-                          <label>Username *</label>
-                          <div class="input-group">
-                            <span class="input-group-text bg-white border-end-0 p-2">
-                              <i class="ti-user text-primary" style="font-size: 1rem;"></i>
-                            </span>
-                            <input type="text" class="form-control border-start-0 ps-1" id="username" placeholder="Seu usuario" required>
+                        <h6>Dados da Empresa</h6>
+                        <div class="row">
+                          <div class="col-md-6">
+                            <div class="form-group">
+                              <label>Nome *</label>
+                              <div class="input-group">
+                                <span class="input-group-text bg-white border-end-0 p-2">
+                                  <i class="ti-briefcase text-primary" style="font-size: 1rem;"></i>
+                                </span>
+                                <input type="text" class="form-control border-start-0 ps-1" id="empresaNome" name="empresa[nome]" placeholder="Razao social" value="<?php echo htmlspecialchars($form['empresa']['nome'], ENT_QUOTES, 'UTF-8'); ?>" required>
+                              </div>
+                              <div class="invalid-feedback" id="empresaNomeError"></div>
+                            </div>
                           </div>
-                          <div class="invalid-feedback" id="usernameError"></div>
+                          <div class="col-md-6">
+                            <div class="form-group">
+                              <label>Nome Fantasia *</label>
+                              <div class="input-group">
+                                <span class="input-group-text bg-white border-end-0 p-2">
+                                  <i class="ti-id-badge text-primary" style="font-size: 1rem;"></i>
+                                </span>
+                                <input type="text" class="form-control border-start-0 ps-1" id="empresaFantasia" name="empresa[nome_fantasia]" placeholder="Nome fantasia" value="<?php echo htmlspecialchars($form['empresa']['nome_fantasia'], ENT_QUOTES, 'UTF-8'); ?>" required>
+                              </div>
+                              <div class="invalid-feedback" id="empresaFantasiaError"></div>
+                            </div>
+                          </div>
                         </div>
-                        
+
+                        <div class="row">
+                          <div class="col-md-6">
+                            <div class="form-group">
+                              <label>CNPJ *</label>
+                              <div class="input-group">
+                                <span class="input-group-text bg-white border-end-0 p-2">
+                                  <i class="ti-receipt text-primary" style="font-size: 1rem;"></i>
+                                </span>
+                                <input type="text" class="form-control border-start-0 ps-1" id="empresaCnpj" name="empresa[cnpj]" placeholder="00.000.000/0000-00" value="<?php echo htmlspecialchars($form['empresa']['cnpj'], ENT_QUOTES, 'UTF-8'); ?>" required>
+                              </div>
+                              <div class="invalid-feedback" id="empresaCnpjError"></div>
+                            </div>
+                          </div>
+                          <div class="col-md-6">
+                            <div class="form-group">
+                              <label>Telefone *</label>
+                              <div class="input-group">
+                                <span class="input-group-text bg-white border-end-0 p-2">
+                                  <i class="ti-mobile text-primary" style="font-size: 1rem;"></i>
+                                </span>
+                                <input type="text" class="form-control border-start-0 ps-1" id="empresaTelefone" name="empresa[telefone]" placeholder="(00) 00000-0000" value="<?php echo htmlspecialchars($form['empresa']['telefone'], ENT_QUOTES, 'UTF-8'); ?>" required>
+                              </div>
+                              <div class="invalid-feedback" id="empresaTelefoneError"></div>
+                            </div>
+                          </div>
+                        </div>
+
                         <div class="form-group">
-                          <label>Email address *</label>
+                          <label>Email da Empresa *</label>
                           <div class="input-group">
                             <span class="input-group-text bg-white border-end-0 p-2">
                               <i class="ti-email text-primary" style="font-size: 1rem;"></i>
                             </span>
-                            <input type="email" class="form-control border-start-0 ps-1" id="email" placeholder="nome@empresa.com" required>
+                            <input type="email" class="form-control border-start-0 ps-1" id="empresaEmail" name="empresa[email]" placeholder="contato@empresa.com" value="<?php echo htmlspecialchars($form['empresa']['email'], ENT_QUOTES, 'UTF-8'); ?>" required>
                           </div>
-                          <small class="text-muted">Não compartilhamos seu email</small>
-                          <div class="invalid-feedback" id="emailError"></div>
+                          <div class="invalid-feedback" id="empresaEmailError"></div>
                         </div>
-                        
+
                         <div class="form-group">
-                          <label>Password *</label>
+                          <label>Endereco *</label>
                           <div class="input-group">
                             <span class="input-group-text bg-white border-end-0 p-2">
-                              <i class="ti-lock text-primary" style="font-size: 1rem;"></i>
+                              <i class="ti-location-pin text-primary" style="font-size: 1rem;"></i>
                             </span>
-                            <input type="password" class="form-control border-start-0 ps-1" id="password" placeholder="Crie uma senha" required>
+                            <input type="text" class="form-control border-start-0 ps-1" id="empresaEndereco" name="empresa[endereco]" placeholder="Rua, numero, bairro" value="<?php echo htmlspecialchars($form['empresa']['endereco'], ENT_QUOTES, 'UTF-8'); ?>" required>
                           </div>
-                          <div class="invalid-feedback" id="passwordError"></div>
+                          <div class="invalid-feedback" id="empresaEnderecoError"></div>
                         </div>
-                        
-                        <div class="form-group mb-0">
-                          <label>Confirm Password *</label>
-                          <div class="input-group">
-                            <span class="input-group-text bg-white border-end-0 p-2">
-                              <i class="ti-lock text-primary" style="font-size: 1rem;"></i>
-                            </span>
-                            <input type="password" class="form-control border-start-0 ps-1" id="confirmPassword" placeholder="Repita a senha" required>
+
+                        <div class="row">
+                          <div class="col-md-7">
+                            <div class="form-group">
+                              <label>Cidade *</label>
+                              <div class="input-group">
+                                <span class="input-group-text bg-white border-end-0 p-2">
+                                  <i class="ti-map-alt text-primary" style="font-size: 1rem;"></i>
+                                </span>
+                                <input type="text" class="form-control border-start-0 ps-1" id="empresaCidade" name="empresa[cidade]" placeholder="Cidade" value="<?php echo htmlspecialchars($form['empresa']['cidade'], ENT_QUOTES, 'UTF-8'); ?>" required>
+                              </div>
+                              <div class="invalid-feedback" id="empresaCidadeError"></div>
+                            </div>
                           </div>
-                          <div class="invalid-feedback" id="confirmPasswordError"></div>
+                          <div class="col-md-5">
+                            <div class="form-group">
+                              <label>Estado *</label>
+                              <div class="input-group">
+                                <span class="input-group-text bg-white border-end-0 p-2">
+                                  <i class="ti-flag text-primary" style="font-size: 1rem;"></i>
+                                </span>
+                                <input type="text" class="form-control border-start-0 ps-1" id="empresaEstado" name="empresa[estado]" placeholder="UF" value="<?php echo htmlspecialchars($form['empresa']['estado'], ENT_QUOTES, 'UTF-8'); ?>" required>
+                              </div>
+                              <div class="invalid-feedback" id="empresaEstadoError"></div>
+                            </div>
+                          </div>
                         </div>
                       </div>
                     </div>
-
-                    <!-- Step 2: Profile -->
                     <div class="wizard-pane" id="step2">
                       <div class="wizard-section">
-                        <h6>Profile Information</h6>
+                        <h6>Dados do Usuario Administrador</h6>
                         <div class="form-group">
-                          <label>Nome completo *</label>
+                          <label>Nome *</label>
                           <div class="input-group">
                             <span class="input-group-text bg-white border-end-0 p-2">
                               <i class="ti-user text-primary" style="font-size: 1rem;"></i>
                             </span>
-                            <input type="text" class="form-control border-start-0 ps-1" id="fullName" placeholder="Seu nome completo" required>
+                            <input type="text" class="form-control border-start-0 ps-1" id="usuarioNome" name="usuario[nome]" placeholder="Nome completo" value="<?php echo htmlspecialchars($form['usuario']['nome'], ENT_QUOTES, 'UTF-8'); ?>" required>
                           </div>
+                          <div class="invalid-feedback" id="usuarioNomeError"></div>
                         </div>
-                        
+
                         <div class="form-group">
-                          <label>Empresa</label>
+                          <label>Email *</label>
                           <div class="input-group">
                             <span class="input-group-text bg-white border-end-0 p-2">
-                              <i class="ti-briefcase text-primary" style="font-size: 1rem;"></i>
+                              <i class="ti-email text-primary" style="font-size: 1rem;"></i>
                             </span>
-                            <input type="text" class="form-control border-start-0 ps-1" id="company" placeholder="Nome da empresa">
+                            <input type="email" class="form-control border-start-0 ps-1" id="usuarioEmail" name="usuario[email]" placeholder="admin@empresa.com" value="<?php echo htmlspecialchars($form['usuario']['email'], ENT_QUOTES, 'UTF-8'); ?>" required>
                           </div>
+                          <div class="invalid-feedback" id="usuarioEmailError"></div>
                         </div>
-                        
-                        <div class="form-group mb-0">
-                          <label>Telefone *</label>
-                          <div class="input-group">
-                            <span class="input-group-text bg-white border-end-0 p-2">
-                              <i class="ti-mobile text-primary" style="font-size: 1rem;"></i>
-                            </span>
-                            <input type="text" class="form-control border-start-0 ps-1" id="phone" placeholder="(00) 00000-0000" required>
+
+                        <div class="row">
+                          <div class="col-md-6">
+                            <div class="form-group">
+                              <label>Senha *</label>
+                              <div class="input-group">
+                                <span class="input-group-text bg-white border-end-0 p-2">
+                                  <i class="ti-lock text-primary" style="font-size: 1rem;"></i>
+                                </span>
+                                <input type="password" class="form-control border-start-0 ps-1" id="usuarioSenha" name="usuario[senha]" placeholder="Crie uma senha" required>
+                              </div>
+                              <div class="invalid-feedback" id="usuarioSenhaError"></div>
+                            </div>
+                          </div>
+                          <div class="col-md-6">
+                            <div class="form-group">
+                              <label>Confirmar Senha *</label>
+                              <div class="input-group">
+                                <span class="input-group-text bg-white border-end-0 p-2">
+                                  <i class="ti-lock text-primary" style="font-size: 1rem;"></i>
+                                </span>
+                                <input type="password" class="form-control border-start-0 ps-1" id="usuarioConfirmar" name="usuario[confirmar]" placeholder="Repita a senha" required>
+                              </div>
+                              <div class="invalid-feedback" id="usuarioConfirmarError"></div>
+                            </div>
                           </div>
                         </div>
                       </div>
                     </div>
 
-                    <!-- Step 3: Comments -->
                     <div class="wizard-pane" id="step3">
                       <div class="wizard-section">
-                        <h6>Additional Information</h6>
-                        <div class="form-group mb-0">
-                          <label>Comments</label>
-                          <textarea class="form-control" id="comments" rows="3" placeholder="Conte um pouco sobre o seu uso previsto."></textarea>
+                        <h6>Plano e Licenca</h6>
+                        <div class="d-flex flex-wrap gap-2">
+                          <span class="info-pill"><i class="ti-star"></i> Plano Trial Automatico</span>
+                          <span class="info-pill"><i class="ti-time"></i> Licenca gerada no cadastro</span>
+                          <span class="info-pill"><i class="ti-check"></i> Ativacao imediata</span>
+                        </div>
+                        <div class="mt-3">
+                          <p class="text-secondary mb-2" style="font-size: 0.85rem;">
+                            Ao finalizar, sua empresa sera criada no plano trial e a licenca sera ativada automaticamente.
+                          </p>
                         </div>
                       </div>
                     </div>
 
-                    <!-- Step 4: Finish -->
                     <div class="wizard-pane" id="step4">
                       <div class="wizard-section">
-                        <h6>Review Your Information</h6>
+                        <h6>Resumo e Confirmacao</h6>
                         <div id="summary"></div>
+                        <?php if (is_array($apiResult)): ?>
+                          <div class="mt-3">
+                            <div class="summary-item">
+                              <span class="summary-label">Plano:</span>
+                              <span class="summary-value"><?php echo htmlspecialchars((string)($apiResult['plano']['nome'] ?? 'Trial'), ENT_QUOTES, 'UTF-8'); ?></span>
+                            </div>
+                            <div class="summary-item">
+                              <span class="summary-label">Status assinatura:</span>
+                              <span class="summary-value"><?php echo htmlspecialchars((string)($apiResult['assinatura']['status'] ?? 'trial'), ENT_QUOTES, 'UTF-8'); ?></span>
+                            </div>
+                            <div class="summary-item">
+                              <span class="summary-label">Periodo:</span>
+                              <span class="summary-value"><?php echo htmlspecialchars((string)($apiResult['assinatura']['data_inicio'] ?? ''), ENT_QUOTES, 'UTF-8'); ?> ate <?php echo htmlspecialchars((string)($apiResult['assinatura']['data_fim'] ?? ''), ENT_QUOTES, 'UTF-8'); ?></span>
+                            </div>
+                            <?php if (!empty($apiResult['confirmacao_url'])): ?>
+                              <div class="summary-item">
+                                <span class="summary-label">Confirmacao:</span>
+                                <span class="summary-value">Email pendente</span>
+                              </div>
+                            <?php endif; ?>
+                          </div>
+                        <?php endif; ?>
                       </div>
                     </div>
                   </div>
 
-                  <!-- Navigation Buttons -->
                   <div class="wizard-actions">
                     <button type="button" class="btn btn-outline-primary px-3" id="prevBtn" onclick="changeStep(-1)" disabled>Anterior</button>
-                    <button type="button" class="btn btn-primary px-4" id="nextBtn" onclick="changeStep(1)">PRÓXIMA ETAPA</button>
+                    <button type="button" class="btn btn-primary px-4" id="nextBtn" onclick="changeStep(1)">PROXIMA ETAPA</button>
                     <button type="button" class="btn btn-success px-4" id="submitBtn" style="display: none;" onclick="submitForm()">FINALIZAR</button>
                   </div>
                 </form>
+                <?php endif; ?>
               </div>
             </div>
           </div>
-
-          <!-- Coluna direita: mantida igual -->
           <div class="col-lg-6 login-half-bg d-flex flex-column align-items-center justify-content-center">
             <div class="right-image-content">
               <h2 class="display-6 fw-light text-white">Secure & modern</h2>
@@ -527,7 +765,7 @@
                 <span class="badge bg-white text-dark px-3 py-2 rounded-pill">#cloud</span>
               </div>
             </div>
-            <p class="text-white-50 small position-absolute bottom-0 mb-3">Copyright &copy; 2025 All rights reserved.</p>
+            <p class="text-white-50 small position-absolute bottom-0 mb-3">Copyright &copy; 2026 All rights reserved.</p>
           </div>
         </div>
       </div>
@@ -539,20 +777,21 @@
     let currentStep = 1;
     const totalSteps = 4;
 
-    // Elementos do DOM
     const steps = document.querySelectorAll('.wizard-step');
     const panes = document.querySelectorAll('.wizard-pane');
     const prevBtn = document.getElementById('prevBtn');
     const nextBtn = document.getElementById('nextBtn');
     const submitBtn = document.getElementById('submitBtn');
     const progressBar = document.getElementById('progressBar');
+    const form = document.getElementById('wizardForm');
+
+    const startStep = <?php echo is_array($apiResult) ? 4 : 1; ?>;
 
     function updateDisplay() {
-      // Atualiza steps
       steps.forEach((step, index) => {
         const stepNum = index + 1;
         step.classList.remove('active', 'completed');
-        
+
         if (stepNum === currentStep) {
           step.classList.add('active');
         } else if (stepNum < currentStep) {
@@ -560,7 +799,6 @@
         }
       });
 
-      // Atualiza panes
       panes.forEach((pane, index) => {
         if (index + 1 === currentStep) {
           pane.classList.add('active');
@@ -569,9 +807,8 @@
         }
       });
 
-      // Atualiza botões
       prevBtn.disabled = currentStep === 1;
-      
+
       if (currentStep === totalSteps) {
         nextBtn.style.display = 'none';
         submitBtn.style.display = 'block';
@@ -580,11 +817,9 @@
         submitBtn.style.display = 'none';
       }
 
-      // Atualiza barra de progresso
       const progress = (currentStep / totalSteps) * 100;
       progressBar.style.width = progress + '%';
 
-      // Se for última etapa, atualiza resumo
       if (currentStep === totalSteps) {
         updateSummary();
       }
@@ -592,68 +827,113 @@
 
     function validateStep(step) {
       let isValid = true;
-      
-      // Remove erros anteriores
+
       document.querySelectorAll('.is-invalid').forEach(el => {
         el.classList.remove('is-invalid');
       });
 
       if (step === 1) {
-        // Valida step 1
-        const username = document.getElementById('username');
-        const email = document.getElementById('email');
-        const password = document.getElementById('password');
-        const confirmPassword = document.getElementById('confirmPassword');
+        const empresaNome = document.getElementById('empresaNome');
+        const empresaFantasia = document.getElementById('empresaFantasia');
+        const empresaCnpj = document.getElementById('empresaCnpj');
+        const empresaTelefone = document.getElementById('empresaTelefone');
+        const empresaEmail = document.getElementById('empresaEmail');
+        const empresaEndereco = document.getElementById('empresaEndereco');
+        const empresaCidade = document.getElementById('empresaCidade');
+        const empresaEstado = document.getElementById('empresaEstado');
 
-        if (!username.value.trim()) {
-          username.classList.add('is-invalid');
-          document.getElementById('usernameError').textContent = 'Username é obrigatório';
+        if (!empresaNome.value.trim()) {
+          empresaNome.classList.add('is-invalid');
+          document.getElementById('empresaNomeError').textContent = 'Nome obrigatorio';
           isValid = false;
         }
 
-        if (!email.value.trim()) {
-          email.classList.add('is-invalid');
-          document.getElementById('emailError').textContent = 'Email é obrigatório';
-          isValid = false;
-        } else if (!isValidEmail(email.value)) {
-          email.classList.add('is-invalid');
-          document.getElementById('emailError').textContent = 'Email inválido';
+        if (!empresaFantasia.value.trim()) {
+          empresaFantasia.classList.add('is-invalid');
+          document.getElementById('empresaFantasiaError').textContent = 'Nome fantasia obrigatorio';
           isValid = false;
         }
 
-        if (!password.value) {
-          password.classList.add('is-invalid');
-          document.getElementById('passwordError').textContent = 'Senha é obrigatória';
-          isValid = false;
-        } else if (password.value.length < 6) {
-          password.classList.add('is-invalid');
-          document.getElementById('passwordError').textContent = 'Senha deve ter pelo menos 6 caracteres';
+        if (!empresaCnpj.value.trim()) {
+          empresaCnpj.classList.add('is-invalid');
+          document.getElementById('empresaCnpjError').textContent = 'CNPJ obrigatorio';
           isValid = false;
         }
 
-        if (!confirmPassword.value) {
-          confirmPassword.classList.add('is-invalid');
-          document.getElementById('confirmPasswordError').textContent = 'Confirme sua senha';
+        if (!empresaTelefone.value.trim()) {
+          empresaTelefone.classList.add('is-invalid');
+          document.getElementById('empresaTelefoneError').textContent = 'Telefone obrigatorio';
           isValid = false;
-        } else if (password.value !== confirmPassword.value) {
-          confirmPassword.classList.add('is-invalid');
-          document.getElementById('confirmPasswordError').textContent = 'Senhas não conferem';
+        }
+
+        if (!empresaEmail.value.trim()) {
+          empresaEmail.classList.add('is-invalid');
+          document.getElementById('empresaEmailError').textContent = 'Email obrigatorio';
+          isValid = false;
+        } else if (!isValidEmail(empresaEmail.value)) {
+          empresaEmail.classList.add('is-invalid');
+          document.getElementById('empresaEmailError').textContent = 'Email invalido';
+          isValid = false;
+        }
+
+        if (!empresaEndereco.value.trim()) {
+          empresaEndereco.classList.add('is-invalid');
+          document.getElementById('empresaEnderecoError').textContent = 'Endereco obrigatorio';
+          isValid = false;
+        }
+
+        if (!empresaCidade.value.trim()) {
+          empresaCidade.classList.add('is-invalid');
+          document.getElementById('empresaCidadeError').textContent = 'Cidade obrigatoria';
+          isValid = false;
+        }
+
+        if (!empresaEstado.value.trim()) {
+          empresaEstado.classList.add('is-invalid');
+          document.getElementById('empresaEstadoError').textContent = 'Estado obrigatorio';
           isValid = false;
         }
       }
-      
-      if (step === 2) {
-        // Valida step 2
-        const fullName = document.getElementById('fullName');
-        const phone = document.getElementById('phone');
 
-        if (!fullName.value.trim()) {
-          fullName.classList.add('is-invalid');
+      if (step === 2) {
+        const usuarioNome = document.getElementById('usuarioNome');
+        const usuarioEmail = document.getElementById('usuarioEmail');
+        const usuarioSenha = document.getElementById('usuarioSenha');
+        const usuarioConfirmar = document.getElementById('usuarioConfirmar');
+
+        if (!usuarioNome.value.trim()) {
+          usuarioNome.classList.add('is-invalid');
+          document.getElementById('usuarioNomeError').textContent = 'Nome obrigatorio';
           isValid = false;
         }
 
-        if (!phone.value.trim()) {
-          phone.classList.add('is-invalid');
+        if (!usuarioEmail.value.trim()) {
+          usuarioEmail.classList.add('is-invalid');
+          document.getElementById('usuarioEmailError').textContent = 'Email obrigatorio';
+          isValid = false;
+        } else if (!isValidEmail(usuarioEmail.value)) {
+          usuarioEmail.classList.add('is-invalid');
+          document.getElementById('usuarioEmailError').textContent = 'Email invalido';
+          isValid = false;
+        }
+
+        if (!usuarioSenha.value) {
+          usuarioSenha.classList.add('is-invalid');
+          document.getElementById('usuarioSenhaError').textContent = 'Senha obrigatoria';
+          isValid = false;
+        } else if (usuarioSenha.value.length < 6) {
+          usuarioSenha.classList.add('is-invalid');
+          document.getElementById('usuarioSenhaError').textContent = 'Senha deve ter pelo menos 6 caracteres';
+          isValid = false;
+        }
+
+        if (!usuarioConfirmar.value) {
+          usuarioConfirmar.classList.add('is-invalid');
+          document.getElementById('usuarioConfirmarError').textContent = 'Confirme a senha';
+          isValid = false;
+        } else if (usuarioSenha.value !== usuarioConfirmar.value) {
+          usuarioConfirmar.classList.add('is-invalid');
+          document.getElementById('usuarioConfirmarError').textContent = 'Senhas nao conferem';
           isValid = false;
         }
       }
@@ -667,17 +947,16 @@
 
     function changeStep(direction) {
       if (direction > 0) {
-        // Próxima etapa - valida antes
         if (!validateStep(currentStep)) {
           return;
         }
       }
 
       currentStep += direction;
-      
+
       if (currentStep < 1) currentStep = 1;
       if (currentStep > totalSteps) currentStep = totalSteps;
-      
+
       updateDisplay();
     }
 
@@ -685,72 +964,67 @@
       const summary = document.getElementById('summary');
       summary.innerHTML = `
         <div class="summary-item">
-          <span class="summary-label">Username:</span>
-          <span class="summary-value">${document.getElementById('username').value || 'Não informado'}</span>
-        </div>
-        <div class="summary-item">
-          <span class="summary-label">Email:</span>
-          <span class="summary-value">${document.getElementById('email').value || 'Não informado'}</span>
-        </div>
-        <div class="summary-item">
-          <span class="summary-label">Nome completo:</span>
-          <span class="summary-value">${document.getElementById('fullName').value || 'Não informado'}</span>
-        </div>
-        <div class="summary-item">
           <span class="summary-label">Empresa:</span>
-          <span class="summary-value">${document.getElementById('company').value || 'Não informada'}</span>
+          <span class="summary-value">${document.getElementById('empresaNome').value || 'Nao informado'}</span>
+        </div>
+        <div class="summary-item">
+          <span class="summary-label">Nome Fantasia:</span>
+          <span class="summary-value">${document.getElementById('empresaFantasia').value || 'Nao informado'}</span>
+        </div>
+        <div class="summary-item">
+          <span class="summary-label">CNPJ:</span>
+          <span class="summary-value">${document.getElementById('empresaCnpj').value || 'Nao informado'}</span>
+        </div>
+        <div class="summary-item">
+          <span class="summary-label">Email Empresa:</span>
+          <span class="summary-value">${document.getElementById('empresaEmail').value || 'Nao informado'}</span>
         </div>
         <div class="summary-item">
           <span class="summary-label">Telefone:</span>
-          <span class="summary-value">${document.getElementById('phone').value || 'Não informado'}</span>
+          <span class="summary-value">${document.getElementById('empresaTelefone').value || 'Nao informado'}</span>
         </div>
         <div class="summary-item">
-          <span class="summary-label">Comments:</span>
-          <span class="summary-value">${document.getElementById('comments').value || 'Sem comentários'}</span>
+          <span class="summary-label">Cidade/Estado:</span>
+          <span class="summary-value">${document.getElementById('empresaCidade').value || 'Nao informado'} - ${document.getElementById('empresaEstado').value || ''}</span>
+        </div>
+        <div class="summary-item">
+          <span class="summary-label">Usuario:</span>
+          <span class="summary-value">${document.getElementById('usuarioNome').value || 'Nao informado'}</span>
+        </div>
+        <div class="summary-item">
+          <span class="summary-label">Email Usuario:</span>
+          <span class="summary-value">${document.getElementById('usuarioEmail').value || 'Nao informado'}</span>
         </div>
       `;
     }
 
     function submitForm() {
-      // Valida último passo se necessário
       if (validateStep(currentStep)) {
-        // Aqui você pode enviar os dados para o servidor
-        const formData = {
-          username: document.getElementById('username').value,
-          email: document.getElementById('email').value,
-          password: document.getElementById('password').value,
-          fullName: document.getElementById('fullName').value,
-          company: document.getElementById('company').value,
-          phone: document.getElementById('phone').value,
-          comments: document.getElementById('comments').value
-        };
-        
-        console.log('Dados do formulário:', formData);
-        
-        // Simula envio bem-sucedido
-        alert('Cadastro realizado com sucesso!');
-        
-        // Redireciona para login (opcional)
-        // window.location.href = 'login.php';
+        form.submit();
       }
     }
 
-    // Inicializa
     updateDisplay();
+    if (startStep > 1) {
+      currentStep = startStep;
+      updateDisplay();
+    }
 
-    // Adiciona máscara de telefone simples
-    document.getElementById('phone').addEventListener('input', function(e) {
-      let value = e.target.value.replace(/\D/g, '');
-      if (value.length > 11) value = value.slice(0, 11);
-      
-      if (value.length > 6) {
-        value = value.replace(/(\d{2})(\d{5})(\d{4})/, '($1) $2-$3');
-      } else if (value.length > 2) {
-        value = value.replace(/(\d{2})(\d+)/, '($1) $2');
-      }
-      
-      e.target.value = value;
-    });
+    const telefoneInput = document.getElementById('empresaTelefone');
+    if (telefoneInput) {
+      telefoneInput.addEventListener('input', function(e) {
+        let value = e.target.value.replace(/\D/g, '');
+        if (value.length > 11) value = value.slice(0, 11);
+
+        if (value.length > 6) {
+          value = value.replace(/(\d{2})(\d{5})(\d{4})/, '($1) $2-$3');
+        } else if (value.length > 2) {
+          value = value.replace(/(\d{2})(\d+)/, '($1) $2');
+        }
+
+        e.target.value = value;
+      });
+    }
   </script>
 </body>
 </html>

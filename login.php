@@ -7,6 +7,32 @@ $apiBase = rtrim((string)env('API_BASE_URL', ''), '/');
 $loginError = '';
 $emailValue = '';
 
+function extractLicencaFromResponse($data) {
+  if (!is_array($data)) {
+    return null;
+  }
+  $empresa = $data['empresa'] ?? null;
+  if (!is_array($empresa)) {
+    return null;
+  }
+  if (isset($empresa['assinatura_ativa']) && is_array($empresa['assinatura_ativa'])) {
+    $assinatura = $empresa['assinatura_ativa'];
+    if (isset($assinatura['licenca']) && is_array($assinatura['licenca'])) {
+      return $assinatura['licenca'];
+    }
+  }
+  if (isset($empresa['licenca']) && is_array($empresa['licenca'])) {
+    return $empresa['licenca'];
+  }
+  return null;
+}
+
+function normalizeLicencaStatus($status) {
+  $status = is_string($status) ? trim($status) : '';
+  $status = strtolower($status);
+  return $status;
+}
+
 function extractEmpresaIdFromToken($token) {
   $parts = explode('.', (string)$token);
   if (count($parts) < 2) {
@@ -89,7 +115,81 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     } else {
       $data = json_decode($response, true);
       if ($httpCode >= 200 && $httpCode < 300 && isset($data['access_token'])) {
-        $_SESSION['token'] = $data['access_token'];
+        $licenca = extractLicencaFromResponse($data);
+        $licencaStatus = '';
+        $licencaMensagem = '';
+        $licencaDiasRestantes = null;
+        $licencaDiasExpirados = null;
+        $licencaDuracaoDias = null;
+        $licencaDuracaoMeses = null;
+        $licencaDuracaoAnos = null;
+        if (is_array($licenca)) {
+          $licencaStatus = normalizeLicencaStatus($licenca['status'] ?? '');
+          $licencaMensagem = is_string($licenca['mensagem'] ?? null) ? (string)$licenca['mensagem'] : '';
+          $licencaDiasRestantes = $licenca['dias_restantes'] ?? null;
+          $licencaDiasExpirados = $licenca['dias_expirados'] ?? null;
+          $licencaDuracaoDias = $licenca['duracao_dias'] ?? null;
+          $licencaDuracaoMeses = $licenca['duracao_meses'] ?? null;
+          $licencaDuracaoAnos = $licenca['duracao_anos'] ?? null;
+        }
+
+        unset(
+          $_SESSION['licenca_status'],
+          $_SESSION['licenca_mensagem'],
+          $_SESSION['licenca_dias_restantes'],
+          $_SESSION['licenca_dias_expirados'],
+          $_SESSION['licenca_duracao_dias'],
+          $_SESSION['licenca_duracao_meses'],
+          $_SESSION['licenca_duracao_anos']
+        );
+
+        if ($licencaStatus === 'expirada') {
+          $loginError = $licencaMensagem !== '' ? $licencaMensagem : 'Licenca expirada';
+          $_SESSION['licenca_status'] = $licencaStatus;
+          $_SESSION['licenca_mensagem'] = $loginError;
+        } else {
+          if ($licencaStatus === 'ok' && $licencaMensagem === '') {
+            $licencaMensagem = 'Licenca ok';
+          }
+
+          $_SESSION['token'] = $data['access_token'];
+          $_SESSION['licenca_status'] = $licencaStatus;
+          if ($licencaMensagem !== '') {
+            $_SESSION['licenca_mensagem'] = $licencaMensagem;
+          }
+          if (is_numeric($licencaDiasRestantes)) {
+            $_SESSION['licenca_dias_restantes'] = (int)$licencaDiasRestantes;
+          }
+          if (is_numeric($licencaDiasExpirados)) {
+            $_SESSION['licenca_dias_expirados'] = (int)$licencaDiasExpirados;
+          }
+          if (is_numeric($licencaDuracaoDias)) {
+            $_SESSION['licenca_duracao_dias'] = (int)$licencaDuracaoDias;
+          }
+          if (is_numeric($licencaDuracaoMeses)) {
+            $_SESSION['licenca_duracao_meses'] = (int)$licencaDuracaoMeses;
+          }
+          if (is_numeric($licencaDuracaoAnos)) {
+            $_SESSION['licenca_duracao_anos'] = (int)$licencaDuracaoAnos;
+          }
+
+          $loginNome = $data['nome'] ?? '';
+          $loginEmail = $data['email'] ?? '';
+          $loginEmpresaId = $data['empresa_id'] ?? '';
+          $loginUserId = $data['id'] ?? '';
+          $perfilLogin = '';
+          $perfilIdLogin = '';
+          if (!empty($data['perfis']) && is_array($data['perfis'])) {
+            $perfilItem = $data['perfis'][0] ?? null;
+            if (is_object($perfilItem)) {
+              $perfilItem = (array)$perfilItem;
+            }
+            if (is_array($perfilItem)) {
+              $perfilLogin = $perfilItem['nome'] ?? $perfilItem['name'] ?? '';
+              $perfilIdLogin = $perfilItem['id'] ?? '';
+            }
+          }
+
         $_SESSION['user_name'] = '';
         $_SESSION['user_email'] = '';
 
@@ -114,16 +214,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
           if (is_array($perfil)) {
             $perfil = $perfil['nome'] ?? $perfil['name'] ?? '';
           }
+          if ($perfilLogin !== '') {
+            $perfil = $perfilLogin;
+          }
+          $perfilId = $perfilIdLogin !== '' ? $perfilIdLogin : ($user['perfil_id'] ?? $user['perfilId'] ?? '');
           $perfilNormalized = is_string($perfil) ? strtolower(trim($perfil)) : '';
           $perfilNormalized = str_replace(['-', ' '], '_', $perfilNormalized);
           $nameLower = is_string($name) ? strtolower($name) : '';
           $emailLower = is_string($email) ? strtolower($email) : '';
-          if (strpos($perfilNormalized, 'master') !== false) {
+          if (strpos($perfilNormalized, 'cozinha') !== false) {
+            $perfilNormalized = 'cozinha';
+          } elseif (strpos($perfilNormalized, 'master') !== false) {
             $perfilNormalized = 'admin_master';
           } elseif (strpos($perfilNormalized, 'admin') !== false) {
             $perfilNormalized = 'admin';
           }
-          if ($perfilNormalized !== 'admin_master' && (strpos($nameLower, 'master') !== false || $emailLower === 'admin@clickresto.com')) {
+          if ($perfilNormalized !== 'admin_master' && $perfilNormalized !== 'cozinha' && (strpos($nameLower, 'master') !== false || $emailLower === 'admin@clickresto.com')) {
             $perfilNormalized = 'admin_master';
           }
           if ($perfilNormalized === '') {
@@ -132,11 +238,52 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
           $_SESSION['user_name'] = is_string($name) ? $name : '';
           $_SESSION['user_email'] = is_string($email) ? $email : '';
           $_SESSION['user_role'] = $perfilNormalized;
+          if ($perfil !== '') {
+            $_SESSION['user_profile_name'] = is_string($perfil) ? $perfil : '';
+          }
+          if ($perfilId !== '') {
+            $_SESSION['user_profile_id'] = (string)$perfilId;
+          }
           if ($userId !== '') {
             $_SESSION['user_id'] = (string)$userId;
           }
           if ($empresaId !== '') {
             $_SESSION['empresa_id'] = (string)$empresaId;
+          }
+        } else {
+          $perfilFallback = $perfilLogin;
+          $perfilNormalized = is_string($perfilFallback) ? strtolower(trim($perfilFallback)) : '';
+          $perfilNormalized = str_replace(['-', ' '], '_', $perfilNormalized);
+          if ($perfilNormalized !== '') {
+            if (strpos($perfilNormalized, 'cozinha') !== false) {
+              $perfilNormalized = 'cozinha';
+            } elseif (strpos($perfilNormalized, 'master') !== false) {
+              $perfilNormalized = 'admin_master';
+            } elseif (strpos($perfilNormalized, 'admin') !== false) {
+              $perfilNormalized = 'admin';
+            }
+            if ($perfilNormalized === '') {
+              $perfilNormalized = 'admin';
+            }
+            $_SESSION['user_role'] = $perfilNormalized;
+          }
+          if ($loginNome !== '') {
+            $_SESSION['user_name'] = (string)$loginNome;
+          }
+          if ($loginEmail !== '') {
+            $_SESSION['user_email'] = (string)$loginEmail;
+          }
+          if ($loginUserId !== '') {
+            $_SESSION['user_id'] = (string)$loginUserId;
+          }
+          if ($loginEmpresaId !== '') {
+            $_SESSION['empresa_id'] = (string)$loginEmpresaId;
+          }
+          if ($perfilLogin !== '') {
+            $_SESSION['user_profile_name'] = (string)$perfilLogin;
+          }
+          if ($perfilIdLogin !== '') {
+            $_SESSION['user_profile_id'] = (string)$perfilIdLogin;
           }
         }
 
@@ -155,14 +302,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
 
         $role = strtolower((string)($_SESSION['user_role'] ?? ''));
-        if ($role === 'admin') {
+        if ($role === 'cozinha') {
+          header('Location: index.php?paginas=gertao_cozinha');
+        } elseif ($role === 'admin') {
           header('Location: index.php?paginas=HomeResto');
         } else {
           header('Location: index.php?paginas=home');
         }
-        exit;
+          exit;
+        }
       }
-      $loginError = $data['message'] ?? 'Credenciais invalidas.';
+      if ($loginError === '') {
+        $loginError = $data['message'] ?? 'Credenciais invalidas.';
+      }
     }
   }
 }

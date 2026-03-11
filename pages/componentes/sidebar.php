@@ -4,22 +4,39 @@ if (session_status() === PHP_SESSION_NONE) {
 }
 $role = strtolower((string)($_SESSION['user_role'] ?? ''));
 $role = str_replace(['-', ' '], '_', $role);
-if (strpos($role, 'master') !== false) {
+if (strpos($role, 'cozinha') !== false) {
+  $role = 'cozinha';
+} elseif (strpos($role, 'master') !== false) {
   $role = 'admin_master';
 } elseif (strpos($role, 'admin') !== false) {
   $role = 'admin';
 } else {
   $role = 'admin';
 }
+
+
 $nameLower = strtolower((string)($_SESSION['user_name'] ?? ''));
 $emailLower = strtolower((string)($_SESSION['user_email'] ?? ''));
-if ($role !== 'admin_master' && (strpos($nameLower, 'master') !== false || $emailLower === 'admin@clickresto.com')) {
+if ($role !== 'admin_master' && $role !== 'cozinha' && (strpos($nameLower, 'master') !== false || $emailLower === 'admin@clickresto.com')) {
   $role = 'admin_master';
 }
 ?>
 <nav class="sidebar sidebar-offcanvas" id="sidebar">
           <ul class="nav">
-            <?php if ($role === 'admin'): ?>
+            <?php if ($role === 'cozinha'): ?>
+              <li class="nav-item">
+                <a class="nav-link" href="index.php?paginas=gertao_cozinha">
+                  <i class="mdi mdi-view-dashboard menu-icon"></i>
+                  <span class="menu-title">Gestao Cozinha</span>
+                </a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="index.php?paginas=painel_atendimento_cozinha">
+                  <i class="mdi mdi-silverware-fork-knife menu-icon"></i>
+                  <span class="menu-title">Painel Atendimento</span>
+                </a>
+              </li>
+            <?php elseif ($role === 'admin'): ?>
               <li class="nav-item">
                 <a class="nav-link" href="index.php?paginas=HomeResto">
                   <i class="mdi mdi-silverware-fork-knife menu-icon"></i>
@@ -86,6 +103,13 @@ if ($role !== 'admin_master' && (strpos($nameLower, 'master') !== false || $emai
                 <a class="nav-link" href="index.php?paginas=clientes">
                   <i class="menu-icon mdi mdi-account-group-outline"></i>
                   <span class="menu-title">Clientes</span>
+                </a>
+              </li>
+
+              <li class="nav-item">
+                <a class="nav-link" href="index.php?paginas=usuarios_empresa_admin">
+                  <i class="menu-icon mdi mdi-account-multiple-outline"></i>
+                  <span class="menu-title">Usuarios</span>
                 </a>
               </li>
 
