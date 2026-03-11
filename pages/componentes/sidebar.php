@@ -95,6 +95,7 @@ if ($role !== 'admin_master' && $role !== 'cozinha' && (strpos($nameLower, 'mast
                   <ul class="nav flex-column sub-menu">
                     <li class="nav-item"><a class="nav-link" href="index.php?paginas=caixa">Caixa</a></li>
                     <li class="nav-item"><a class="nav-link" href="index.php?paginas=pagamentos">Pagamentos</a></li>
+                    <li class="nav-item"><a class="nav-link" href="index.php?paginas=indicadores_financeiro">Indicadores</a></li>
                   </ul>
                 </div>
               </li>
